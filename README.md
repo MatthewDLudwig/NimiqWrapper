@@ -21,6 +21,30 @@ I'm not too experienced with NodeJS although I figured my experience with JavaSc
 ### Other Implementations
 If anyone uses NimiqWrapper with a framework not discussed above, please reach out to me or issue a pull request detailing any implementation details of that framework.  I imagine that NimiqWrapper won't work perfectly on at least one framework, but it was designed to work in most environments and I would like to document any exceptions to that.
 
+## Accessing the Wrapped Objects
+As a developer, I like to reduce the amount of repeated code across my projects while still maintaining a close to the bone feel.  With NimiqWrapper.js you can do most basic operations while only working with the NimiqWrapper and MinerWrapper objects, but both wrappers give access to the wrapped objects.  Descriptions of the four objects most developers will be working with are below:
+ * NimiqWrapper object (referred to as "wrapper" as needed in the bullets)
+   * This object is the meat and bones of NimiqWraper.js and initializes the Nimiq engine.
+   * Getters are provided to obtain commonly needed values.
+     * Global hash rate, block reward, block height, etc...
+     * Further getters can (and should) be added in future updates.
+ * MinerWrapper object (accessed through "wrapper.miner")
+   * The MinerWrapper object is created by and stored within the NimiqWrapper object.
+   * It can be accessed by using the getter function in your NimiqWrapper object.
+   * Getters are provided in this object as well, but less information is available.
+     * Global hash rate (repeated on purpose), hashrate (current H/s of the miner), and the reward per hour (in NIM)
+     * Getters may be added to NimiqWrapper in the future to access these values without needing the MinerWrapper object.
+ * wrapper.nimiqInstance
+   * This is the officially supported way to access the wrapped Nimiq object.
+   * This object has been populated with the following fields:
+     * consensus, blockchain, accounts, mempool, network, and wallet.
+     * wallet is initialized with the seed and key provided in the constructor.
+   * This object is also saved to window.nimiq for use in the console.
+     * On official nimiq.com sites, this is equivalent to the window.$ object.
+ * wrapper.miner.wrappedMiner
+   * This is the officially supported way to access the wrapped SmartPoolMiner object.
+   * Most interactions with this object can be done through the MinerWrapper object, but in some cases the direct object may be necessary.
+
 ## The Message System
 Thinking ahead towards possibly applications I'd like to develop using Nimiq, I've created a system for signing messages with an address.  This is done by abusing the ExtendedTransaction spec provided in Nimiq and details can be seen below:
  * A message consists of 3 nonces and a data field.
