@@ -367,7 +367,7 @@ class NimiqWrapper {
 
 	onConsensusEstablished() {
 		this.consensusCallback("established");
-		if (this.nimiqInstance.wallet) {
+		if (typeof this.nimiqInstance.wallet != 'undefined') {
 			this.nimiqInstance.accounts.get(this.nimiqInstance.wallet.address).then(account => this.onBalanceChanged(account));
 		}
 
@@ -383,7 +383,7 @@ class NimiqWrapper {
 	}
 
 	onHeadChanged() {
-		if (this.nimiqInstance.wallet) {
+		if (typeof this.nimiqInstance.wallet != 'undefined') {
 			this.nimiqInstance.accounts.get(this.nimiqInstance.wallet.address).then(account => this.onBalanceChanged(account));
 		}
 

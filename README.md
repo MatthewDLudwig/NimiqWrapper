@@ -7,13 +7,11 @@ Both wrapping classes were designed in such a way that all interesting events ca
 
 ## Implementation Details
 ### Standard JavaScript
-Implementing NimiqWrapper in a site using standard JavaScript and HTML is quite easy.  Simply create whatever handler functions you deem necessary (most likely headHandler will be a minimum requirement) and have those functions update your UI as necessary.  This can be done via changing JavaScript variables and handling the UI seperately, or by manually manipulating the DOM to update the UI.
+Implementing NimiqWrapper in a site using standard JavaScript and HTML is quite easy.  Simply create whatever handler functions you deem necessary (most likely headHandler will be a minimum requirement) and have those functions update your UI as necessary.  This can be done via changing JavaScript variables and handling updating the UI seperately, or by manually manipulating the DOM to update the UI.  An example of how this can be done can be seen in the demo.html file in this repo, which is hosted at [on my site](https://www.drawpad.org/nimiq/demo.html).
 ### AngularJS
-NimiqWrapper was designed with AngularJS in mind and so using the two together is quite easy.  Similar to the JavaScript section, you will need to create any necessary handler functions and then pass them to the constructor of the NimiqWrapper object.  The important difference with AngularJS is that you must remember to update angular variables within the digest cycle.
+NimiqWrapper was designed with AngularJS in mind and so using the two together is quite easy.  Similar to the JavaScript section, you will need to create any necessary handler functions and then pass them to the constructor of the NimiqWrapper object.  The important difference with AngularJS is that you must remember to update angular variables within the digest cycle.  If you know nothing of the digest cycle, some introductory reading can be found [here](https://www.sitepoint.com/understanding-angulars-apply-digest/) and [here](https://www.thinkful.com/projects/understanding-the-digest-cycle-528/).  Once you understand where the issue is, solving it is not too hard.  $scope.$apply and $timeout are the two most well known solutions, with $scope.$evalAsync being the best I've found.  
 
-If you know nothing of the digest cycle, some introductory reading can be found [here](https://www.sitepoint.com/understanding-angulars-apply-digest/) and [here](https://www.thinkful.com/projects/understanding-the-digest-cycle-528/).  Once you understand where the issue is, solving it is not too hard.  $scope.$apply and $timeout are the two most well known solutions, with $scope.$evalAsync being the best I've found.  
-
-$scope.$apply was my preferred solution however it can run into issues if a digest cycle is already running.  You can use $scope.$apply pretty reliably in most of the handlers except for headHandler.  The headHandler function has the possibility of being called quite often (as blocks roll in or while you're achieving concensus for the first time) and some of these calls will collide with the current digest cycle.  One solution to colliding with a running digest is to use $timeout.  I won't go into much detail on this solution as it's a common WORKAROUND documented all over the internet.  I've always tried to avoid it, but unfortunately $scope.$apply just isn't reliable enough for use with NimiqWrapper.
+$scope.$apply was my preferred solution however it can run into issues if a digest cycle is already running.  You can use $scope.$apply pretty reliably in most of the handlers except for headHandler.  The headHandler function has the possibility of being called quite often (as blocks roll in or while you're achieving concensus for the first time) and some of these calls will collide with the current digest cycle.  One solution to colliding with a running digest is to use $timeout.  I won't go into much detail on this solution as it's a common workaround documented all over the internet.  I've always tried to avoid it, but unfortunately $scope.$apply just isn't reliable enough for use with NimiqWrapper.
 
 After being unhappy with using $timeout in such a way, I did some research and landed upon $scope.$evalAsync which is available in later versions of AngularJS.  A very educational overview of this function can be seen [here](https://www.bennadel.com/blog/2605-scope-evalasync-vs-timeout-in-angularjs.htm) and the same author has an side by side comparison of $evalAsync and a similar function [here](https://www.bennadel.com/blog/2751-scope-applyasync-vs-scope-evalasync-in-angularjs-1-3.htm).  $scope.$evalAsync can be used in the same way as $scope.$apply, except it will always ensure that the function is run at the end of the current digest or start of the next.  This is much faster than $timeout, get's the point clearly across, and fixes the issue with trying to digest in the middle of a digest cycle.
 ### NodeJS
@@ -34,19 +32,19 @@ As a developer, I like to reduce the amount of repeated code across my projects 
    * Getters are provided in this object as well, but less information is available.
      * Global hash rate (repeated on purpose), hashrate (current H/s of the miner), and the reward per hour (in NIM)
      * Getters may be added to NimiqWrapper in the future to access these values without needing the MinerWrapper object.
- * wrapper.nimiqInstance
+ * wrapper.wrappedInstance (wrapper.nimiqInstance)
    * This is the officially supported way to access the wrapped Nimiq object.
    * This object has been populated with the following fields:
      * consensus, blockchain, accounts, mempool, network, and wallet.
-     * wallet is initialized with the seed and key provided in the constructor.
+     * wallet is initialized with the seed and key provided in the connect(...) function.
    * This object is also saved to window.nimiq for use in the console.
      * On official nimiq.com sites, this is equivalent to the window.$ object.
- * wrapper.miner.wrappedMiner
+ * wrapper.wrappedMiner (wrapper.miner.wrappedMiner)
    * This is the officially supported way to access the wrapped SmartPoolMiner object.
    * Most interactions with this object can be done through the MinerWrapper object, but in some cases the direct object may be necessary.
 
 ## The Message System
-Thinking ahead towards possibly applications I'd like to develop using Nimiq, I've created a system for signing messages with an address.  This is done by abusing the ExtendedTransaction spec provided in Nimiq and details can be seen below:
+Thinking ahead towards possibly applications I'd like to develop using Nimiq, I've created a system for signing messages with an address.  An example of this system can be seen [here](https://www.drawpad.org/nimiq/) on my website.  This is done by abusing the ExtendedTransaction spec provided in Nimiq and details can be seen below:
  * A message consists of 3 nonces and a data field.
    * The 3 nonces are stored in the transaction's value, fee, and validityStartHeight fields respectively.
      * This means that the first nonce can never be 0, as all transactions (even if never sent) must transfer some value.
@@ -85,7 +83,7 @@ When signing a message, it's confirmed that the signer is the address specified 
    * The providied nonce values must match those in the message, and the proof must have been signed by the address specified in message.sender
    * In future updates to this function, I hope to somehow confirm that the data "proof" represents is the provided message.
    * The message.data field is returned if all values match, otherwise the null object is returned.
- 
+
 ## Necessary Handlers
 In order to construct a NimiqWrapper object quite a few variables must be provided.  The first 3 are the wallet seed, wallet password, and whether mining should occur.  Wallet seed should be a string containing hexadecimal numbers and produced (ideally) by NimiqUtils.serializeEncryptWallet(...) with the wallet password being the same password used to encrypt the seed.  The third parameter should be a boolean specifying whether mining should begin once consensus is achieved.  The WrappedMiner object will be created regardless of this value, and the value is only used to decide whether mining should begin once consensus is achieved.  This implementation detail may change in the future, as most would expect this variable to be tied directly to the state of the wrapped miner.
 
@@ -118,7 +116,7 @@ The remaining parameters are all required (except the last) but need not do anyt
    * This handler function is called each time a peer joins and provides an object with information on that peer.
    * No realistic uses for this function were found and so the choice was made to make it default to an empty function.
    * This is the only handler that is not required to construct the NimiqWrapper object.
-   
+
 ## Provided Classes
 ### NimiqWrapper
 This class wraps Nimiq as a whole and takes care of initializing the libraries.  To connect to the network and finish up initialization you must call the connect() function.  This function returns a boolean based on whether the wrapper was ready to connect.  This is done to prevent a call to connect() before the Nimiq libraries are fully loaded.  The recommended way to handle this boolean is by using JavaScript's "setInterval" function repeating once per second.  The interval should be cancelled once connect() returns 'true'.
@@ -140,8 +138,29 @@ This horribly named class (as there's already another NimiqUtils class and will 
    * The wallet that was created can be accessed by unserializing and decrypting the returned value.
    * While this is a bit of a hassle, this is done to ensure that the returned value and desired password result in the correct wallet.
    * Anyone wanting to do this without all the extra steps can generate the wallet themselves using "Nimiq.Wallet.generate()".
- ## General Notes
- ## Licensing
+## Demo information
+### Pure JavaScript Demo
+This demo is a clone of the one hosted [by the official team](https://demo.nimiq.com) except using the NimiqWrapper files included here to work with the API.  The same wallet on all computers is connected, and it's "Demo Wallet 1" that is used.
+### Angular Demo
+This demo is custom made and also shows off the messaging system I've created.
+### Demo Wallets and Codes
+#### Demo Wallet 1
+ * Seed - 01 08 80 CB 6F 9C BA 2A 6A D6 7F 3B BF 1E 2F 7D C0 6F D3 66 9F 1D 19 70 9C 6D 7B 1B 1D 2D FD F4 E5 32 0A 7C F9 24 97 48 76 FF 2D 9F 5B A6 9C D8 5C 46 A9 76 3A 94
+ * Key - Password
+#### Demo Message Format
+ * Used Parameters
+ * Message Key / Code
+ * Proof Key / Code
+#### Demo Message 1
+ * (1, 1, 1, Str)
+ * 01 00 03 53 74 72 B5 F8 38 A7 28 FD B2 1D A6 9F A3 A1 56 2A 0D 77 67 87 36 A3 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 01 00 00 00 01 00 00 00 00
+ * A5 A4 CD C1 1E 37 8B 27 7B D2 35 BF C4 C4 54 BE E4 03 E7 5B 2F 30 17 9A 18 49 0D A6 85 29 C5 AC 00 E0 D1 79 88 77 94 31 9D D6 E9 DC 3B 89 D8 5E 9D 29 9F 17 99 D7 3E A2 25 FC 42 01 D4 9E 9A D6 30 73 FF 11 18 3D 1D 7D 3F FE BA 36 96 40 02 A7 9D 65 E9 AD EE 33 95 8F AA 9A 34 64 67 53 BF D6 07
+#### Demo Message 2
+ * (12, 42, 1, This is my data)
+ * 01 00 0F 54 68 69 73 20 69 73 20 6D 79 20 64 61 74 61 B5 F8 38 A7 28 FD B2 1D A6 9F A3 A1 56 2A 0D 77 67 87 36 A3 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0C 00 00 00 00 00 00 00 2A 00 00 00 01 00 00 00 00
+ * A5 A4 CD C1 1E 37 8B 27 7B D2 35 BF C4 C4 54 BE E4 03 E7 5B 2F 30 17 9A 18 49 0D A6 85 29 C5 AC 00 45 46 4B 47 B2 4D D6 FC 23 78 E9 74 76 27 5A C9 DE 40 DF 35 5C B3 3A 6F 85 0A A9 80 E9 13 AB DE 0A F3 E2 E7 85 A5 4F 5A E3 A0 25 59 22 20 B8 F3 75 68 9D 08 65 53 FC 28 EC 05 88 B5 A6 72 E1 06
+## General Notes
+## Licensing
 NimiqWrapper is licensed under the Apache 2.0 license.  This license was chosen in order to restrict developers as little as possible and anything made using NimiqWrapper has no obligations to release source code, include the Apache 2.0 license, or pay me (the creator of NimiqWrapper) any money.
 
 Any modifications made to either of the 3 classes provided with NimiqWrapper won't require that the modified source be released, however I would appreciate if it would be.  Better yet, please submit pull requests for any modifications made that would benefit the community.
