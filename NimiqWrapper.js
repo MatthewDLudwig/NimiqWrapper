@@ -162,6 +162,14 @@ class MinerWrapper {
 		return perBlock * (60 / 1); //1 block per minute, 60 minutes in an hour.
 	}
 
+	get threads() {
+		return this.wrappedMiner.threads;
+	}
+
+	set threads(t) {
+		this.wrappedMiner.threads = t;
+	}
+
 	onHashrateChanged() {
 		//Update inner variables using wrappedMiner.hashrate, threads, etc...
 	}
@@ -181,8 +189,6 @@ class MinerWrapper {
 
 class NimiqWrapper {
 	// mine			=	boolean stating whether the miner should run once consensus is established.
-	// walletSeed	=	array of 54 integers.
-	// walletPass	=	the key required to unlock the seed.
 	// minerChanged	=	function(status)
 	//			See the MinerWrapper.
 	// connectionState	function(status)
@@ -196,11 +202,12 @@ class NimiqWrapper {
 	// headChanged	=	function()
 	// peerJoined	=	function(peer)
 	// 			peer	=	it has a peer.id value.
-	constructor(walletSeed, walletPass, mine, minerChanged, connectionState, consensus, syncStatus, peersChanged, headChanged, peerJoined = (peer) => { }) {
+	constructor(mine, minerChanged, connectionState, consensus, syncStatus, peersChanged, headChanged, peerJoined = (peer) => { }) {
 		this.initDone = false;
+		this.connectDone = false;
 		let saved = this;
 
-		this.initNimiq(walletSeed, walletPass).then(function(result) {
+		this.initNimiq().then(function(result) {
 			saved.nimiqInstance = result;
 			saved.initDone = true;
 		});
@@ -223,7 +230,7 @@ class NimiqWrapper {
 		this.wrappedBalance = account.balance;
 	}
 
-	async initNimiq(seed, key) {
+	async initNimiq() {
 		return new Promise((resolve, reject) => {
 			Nimiq.init(async () => {
 				try {
@@ -245,7 +252,6 @@ class NimiqWrapper {
                     instance.accounts = instance.blockchain.accounts;
                     instance.mempool = instance.consensus.mempool;
                     instance.network = instance.consensus.network;
-					instance.wallet = await Nimiq.Wallet.loadEncrypted(NimiqUtils.stringToBuffer(seed), key);
 					window.nimiq = instance;
 
 					resolve(instance);
@@ -267,8 +273,15 @@ class NimiqWrapper {
 		});
 	}
 
-	connect() {
+	// walletSeed	=	array of 54 integers.
+	// walletPass	=	the key required to unlock the seed.
+	connect(seed, key) {
+		let saved = this;
+
 		if (this.initDone) {
+			Nimiq.Wallet.loadEncrypted(NimiqUtils.stringToBuffer(seed), key).then(function(result) {
+				saved.nimiqInstance.wallet = result;
+			});
 			this.minerInstance = new MinerWrapper(this.nimiqInstance, "pool.porkypool.com", "8444", this.minerChangedHandler, this.connectionStateHandler);
 
 			this.nimiqInstance.consensus.on('lost', () => this.onConsensusLost());
@@ -293,6 +306,10 @@ class NimiqWrapper {
 		}
 
 		return false;
+	}
+
+	get ready() {
+		return this.connectDone;
 	}
 
 	get friendlyAddress() {
@@ -327,6 +344,14 @@ class NimiqWrapper {
 
 	get miner() {
 		return this.minerInstance;
+	}
+
+	get wrappedInstance() {
+		return this.nimiqInstance;
+	}
+
+	get wrappedMiner() {
+		return this.minerInstance.wrappedMiner;
 	}
 
 	onConsensusEstablished() {
