@@ -16,11 +16,18 @@ class NimiqUtils {
 	}
 
 	static createMessage(sender, nonceA, nonceB, nonceC, data) {
-		return new Nimiq.ExtendedTransaction(
-					sender, 0,
-					Nimiq.Address.fromUserFriendlyAddress("NQ07 0000 0000 0000 0000 0000 0000 0000 0000"), 0,
-					nonceA, nonceB, nonceC,
-					0, NimiqUtils.stringToData(data), new Uint8Array(0), 0);
+		let it = null;
+		try {
+			it = new Nimiq.ExtendedTransaction(
+					   sender, 0,
+					   Nimiq.Address.fromUserFriendlyAddress("NQ07 0000 0000 0000 0000 0000 0000 0000 0000"), 0,
+					   nonceA, nonceB, nonceC,
+					   0, NimiqUtils.stringToData(data), new Uint8Array(0), 0);
+		} catch (err) {
+			console.error("Nimiq Wrapper Error - " + err.message);
+		}
+
+		return it;
 	}
 
 	static signMessage(message, signer) {
@@ -279,30 +286,34 @@ class NimiqWrapper {
 		let saved = this;
 
 		if (this.initDone) {
-			Nimiq.Wallet.loadEncrypted(NimiqUtils.stringToBuffer(seed), key).then(function(result) {
-				saved.nimiqInstance.wallet = result;
-			});
-			this.minerInstance = new MinerWrapper(this.nimiqInstance, "pool.porkypool.com", "8444", this.minerChangedHandler, this.connectionStateHandler);
+			try {
+				Nimiq.Wallet.loadEncrypted(NimiqUtils.stringToBuffer(seed), key).then(function(result) {
+					saved.nimiqInstance.wallet = result;
+					saved.minerInstance = new MinerWrapper(saved.nimiqInstance, "pool.porkypool.com", "8444", saved.minerChangedHandler, saved.connectionStateHandler);
+					saved.connectDone = true;
+				});
 
-			this.nimiqInstance.consensus.on('lost', () => this.onConsensusLost());
-			this.nimiqInstance.consensus.on('syncing', () => this.consensusCallback("syncing"));
-			this.nimiqInstance.consensus.on('established', () => this.onConsensusEstablished());
+				this.nimiqInstance.consensus.on('lost', () => this.onConsensusLost());
+				this.nimiqInstance.consensus.on('syncing', () => this.consensusCallback("syncing"));
+				this.nimiqInstance.consensus.on('established', () => this.onConsensusEstablished());
 
-			this.nimiqInstance.consensus.on('sync-chain-proof', () => this.syncStatusCallback('sync-chain-proof'));
-			this.nimiqInstance.consensus.on('verify-chain-proof', () => this.syncStatusCallback('verify-chain-proof'));
-			this.nimiqInstance.consensus.on('sync-accounts-tree', () => this.syncStatusCallback('sync-accounts-tree'));
-			this.nimiqInstance.consensus.on('verify-accounts-tree', () => this.syncStatusCallback('verify-accounts-tree'));
-			this.nimiqInstance.consensus.on('sync-finalize', () => this.syncStatusCallback('sync-finalize'));
+				this.nimiqInstance.consensus.on('sync-chain-proof', () => this.syncStatusCallback('sync-chain-proof'));
+				this.nimiqInstance.consensus.on('verify-chain-proof', () => this.syncStatusCallback('verify-chain-proof'));
+				this.nimiqInstance.consensus.on('sync-accounts-tree', () => this.syncStatusCallback('sync-accounts-tree'));
+				this.nimiqInstance.consensus.on('verify-accounts-tree', () => this.syncStatusCallback('verify-accounts-tree'));
+				this.nimiqInstance.consensus.on('sync-finalize', () => this.syncStatusCallback('sync-finalize'));
 
-			this.nimiqInstance.blockchain.on('head-changed', this.onHeadChanged.bind(this));
-			this.nimiqInstance.network.on('peers-changed', () => this.peersChangedCallback());
-			this.nimiqInstance.network.on('peer-joined', peer => this.peerJoinedCallback(peer));
+				this.nimiqInstance.blockchain.on('head-changed', this.onHeadChanged());
+				this.nimiqInstance.network.on('peers-changed', () => this.peersChangedCallback());
+				this.nimiqInstance.network.on('peer-joined', peer => this.peerJoinedCallback(peer));
 
-			this.minerInstance.wrappedMiner.threads = 1;
-			this.nimiqInstance.network.connect();
+				this.nimiqInstance.network.connect();
 
-			this.onHeadChanged();
-			return true;
+				this.onHeadChanged();
+				return true;
+			} catch (err) {
+				console.error("Nimiq Wrapper Error - " + err.message);
+			}
 		}
 
 		return false;
@@ -356,7 +367,9 @@ class NimiqWrapper {
 
 	onConsensusEstablished() {
 		this.consensusCallback("established");
-		this.nimiqInstance.accounts.get(this.nimiqInstance.wallet.address).then(account => this.onBalanceChanged(account));
+		if (this.nimiqInstance.wallet) {
+			this.nimiqInstance.accounts.get(this.nimiqInstance.wallet.address).then(account => this.onBalanceChanged(account));
+		}
 
 		if (this.shouldMine) {
 			this.minerInstance.startMining();
@@ -370,7 +383,10 @@ class NimiqWrapper {
 	}
 
 	onHeadChanged() {
+		if (this.nimiqInstance.wallet) {
+			this.nimiqInstance.accounts.get(this.nimiqInstance.wallet.address).then(account => this.onBalanceChanged(account));
+		}
+
 		this.headChangedCallback();
-		this.nimiqInstance.accounts.get(this.nimiqInstance.wallet.address).then(account => this.onBalanceChanged(account));
 	}
 }
