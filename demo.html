@@ -41,16 +41,24 @@
 		    const height = wrapper.blockHeight;
 		    console.log(`Now at height ${height}.`);
 		    document.getElementById('height').innerText = height;
-
+			
 			_updateBalance();
 		};
 		
-		let walletSeed = "01 08 80 CB 6F 9C BA 2A 6A D6 7F 3B BF 1E 2F 7D C0 6F D3 66 9F 1D 19 70 9C 6D 7B 1B 1D 2D FD F4 E5 32 0A 7C F9 24 97 48 76 FF 2D 9F 5B A6 9C D8 5C 46 A9 76 3A 94";
-		let walletPass = "Password";
-		let wrapper = new NimiqWrapper(true,logHandler, logHandler, syncHandler, syncHandler, peerHandler, headHandler);
+		let handlers = {
+			consensus: syncHandler,
+			syncStatus: syncHandler,
+			peersChanged: peerHandler,
+			headChanged: headHandler
+		};
+		let inits = {
+			walletSeed: "01 08 80 CB 6F 9C BA 2A 6A D6 7F 3B BF 1E 2F 7D C0 6F D3 66 9F 1D 19 70 9C 6D 7B 1B 1D 2D FD F4 E5 32 0A 7C F9 24 97 48 76 FF 2D 9F 5B A6 9C D8 5C 46 A9 76 3A 94",
+			walletKey: "Password"
+		};
+		let wrapper = new NimiqWrapper(true, handlers);
 
 		let cancelConnect = setInterval(function () {
-			let result = wrapper.connect(walletSeed, walletPass);
+			let result = wrapper.connect(inits);
 			
 			if (result) {
 				document.getElementById('message').innerText = 'Nimiq loaded. Connecting and establishing consensus.';
@@ -59,7 +67,9 @@
 		}, 1000);
 
 		setInterval(function () {
-		    document.getElementById('hashrate').innerText = wrapper.miner.hashrate;
+			if (wrapper.ready) {
+			    document.getElementById('hashrate').innerText = wrapper.miner.hashrate;
+			}
 		}, 1000);
 
     </script>
