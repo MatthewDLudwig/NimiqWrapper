@@ -7,7 +7,7 @@ Both wrapping classes were designed in such a way that all interesting events ca
 
 ## General Details
 ### Getting Started
-In order to construct the NimiqWrapper object, two objects are required.  The first is the `InitInfo` object and the second is the `HandlerFunctions` object.  The `InitInfo` object is meant to contain information on the wallet, mining address, and other information needed to connect to the Nimiq Network.  The `HandlerFunctions` object is meant to contain the callback functions used to obtain information from the wrapper.  Descriptions of the possible fields in each object are given below, and if not present default values will be used.
+In order to fully connect to the Nimiq Network,, two objects are required.  The first is the `InitInfo` object and the second is the `HandlerFunctions` object.  The `InitInfo` object is meant to contain information on the wallet, mining address, and other information needed to connect to the Nimiq Network.  This object will be passed to the connect(...) function of the NimiqWrapper object.  The `HandlerFunctions` object is meant to contain the callback functions used to obtain information from the wrapper.  This object will be passed to the constructor of the NimiqWrapper object.  Descriptions of the possible fields in each object are given below, and if not present default values will be used.
 
 ### InitInfo Object
  * walletSeed
@@ -82,6 +82,15 @@ let cancelConnect = setInterval(function () {
     }
 }, 1000);
 ```
+### Constructor and Connect Functions
+The constructor for the NimiqWrapper object takes 3 parameters with the last being optional.
+ * `mine` specifies whether the miner should begin once consensus is reached.
+ * `handlerFunctions` is the `HandlerFunctions` object which specifies all of the necessary handler functions you'd like to define.
+   * Any callbacks not specified in this object use default functions that simply log appropriate console output.
+ * `full` specifies whether a full node should be initialized instead of a light node.
+   * This parameter is optional and defaults to false if not included.
+   
+The connect function in the NimiqWrapper object takes 1 parameter being the the `InitInfo` object.
 
 ## Implementation Details
 ### Standard JavaScript
