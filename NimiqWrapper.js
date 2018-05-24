@@ -1,3 +1,11 @@
+var WRAPPING_NODE = false;
+if (WRAPPING_NODE) {
+	console.log("Wrapping Nimiq in NodeJS mode!");
+	var Nimiq = require("@nimiq/core");
+} else {
+	console.log("Wrapping Nimiq in JS mode!");
+}
+
 class NimiqUtils {
 	static stringToData(s) {
 		let bytes = [];
@@ -138,9 +146,9 @@ class MinerWrapper {
         miner.on('stop', () => this.minerChangedHandler('stopped'));
         miner.on('confirmed-balance', balance => this.poolPayout = balance);
         miner.on('connection-state', state => this.onConnectionChange(state));
-		this.nimiqInstance.wrappedInstance.miner = miner;
-		console.log('Pool Miner instantiated');
+		this.nimiqInstance.miner = miner;
 
+		console.log('Pool Miner instantiated');
 		miner.connect(host, port);
         return miner;
 	}
@@ -212,8 +220,11 @@ class NimiqWrapper {
 	// headChanged	=	function()
 	// peerJoined	=	function(peer)
 	// 			peer	=	it has a peer.id value.
-	constructor(mine, handlerFunctions, full = false) {
+	// full (true | false)
+	// network (0 | 1 | 2 | 3) (test | main | dev | bounty)
+	constructor(mine, handlerFunctions, full = false, network = 1) {
 		this.fullNode = full;
+		this.whichNetwork = network;
 		this.initDone = false;
 		this.connectDone = false;
 		let saved = this;
@@ -243,47 +254,63 @@ class NimiqWrapper {
 
 	async initNimiq() {
 		return new Promise((resolve, reject) => {
-			Nimiq.init(async () => {
+			let saved = this;
+			async function innerInit() {
 				try {
-					let genesisInitialized;
-
-					try {
-						genesisInitialized = !!Nimiq.GenesisConfig.NETWORK_NAME;
-					} catch(e) {
-						genesisInitialized = false;
+					switch (saved.whichNetwork) {
+						case 0:
+							Nimiq.GenesisConfig.test();
+							break;
+						case 1:
+							Nimiq.GenesisConfig.main();
+							break;
+						case 2:
+							Nimiq.GenesisConfig.dev();
+							break;
+						case 3:
+							Nimiq.GenesisConfig.bounty();
+							break;
+						default:
+							reject("Unknown network requested: " + saved.whichNetwork);
 					}
 
-					if (!genesisInitialized) {
-						Nimiq.GenesisConfig['main']();
-					}
-
-					const instance = {};
-					if (this.fullNode) {
+					let instance = {};
+					if (saved.fullNode) {
 						instance.consensus = await Nimiq.Consensus.full();
 					} else {
 						instance.consensus = await Nimiq.Consensus.light();
 					}
-                    instance.blockchain = instance.consensus.blockchain;
-                    instance.accounts = instance.blockchain.accounts;
-                    instance.mempool = instance.consensus.mempool;
-                    instance.network = instance.consensus.network;
-					window.nimiq = instance;
+
+					instance.blockchain = instance.consensus.blockchain;
+					instance.accounts = instance.blockchain.accounts;
+					instance.mempool = instance.consensus.mempool;
+					instance.network = instance.consensus.network;
+
+                    if (!WRAPPING_NODE) {
+                            window.nimiq = instance;
+                    }
 
 					resolve(instance);
 				} catch(e) {
 					reject(e);
 				}
-			}, function (error) {
-				if (error === Nimiq.ERR_WAIT) {
-					reject('Multiple Nimiq instances are currently running.');
-				} else if (error === Nimiq.ERR_UNSUPPORTED) {
-					reject('The current browser is too old to work with Nimiq.');
-				} else {
-					reject('An unknown initialization error occurred.');
-				}
-			});
+			}
+
+			if (WRAPPING_NODE) {
+				innerInit();
+			} else {
+				Nimiq.init(innerInit, function (error) {
+					if (error === Nimiq.ERR_WAIT) {
+						reject("MULTIPLE");
+					} else if (error === Nimiq.ERR_UNSUPPORTED) {
+						reject("TOOOLD");
+					} else {
+						reject("UNKNOWN");
+					}
+				});
+			}
 		}).catch(async e => {
-			this.errorCallback("NimiqInit", e.message);
+			this.errorCallback("NimiqInit", e);
 		});
 	}
 
@@ -302,6 +329,7 @@ class NimiqWrapper {
 					});
 				} else {
 					console.log("Connecting to Nimiq network without an attached wallet!");
+					saved.minerInstance = new MinerWrapper(saved.nimiqInstance, saved.usedInfo, saved.usedHandlers);
 					saved.connectDone = true;
 				}
 
@@ -404,5 +432,13 @@ class NimiqWrapper {
 		}
 
 		this.headChangedCallback();
+	}
+}
+
+if (WRAPPING_NODE) {
+	module.exports = {
+		NimiqUtils,
+		MinerWrapper,
+		NimiqWrapper
 	}
 }

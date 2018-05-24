@@ -83,13 +83,16 @@ let cancelConnect = setInterval(function () {
 }, 1000);
 ```
 ### Constructor and Connect Functions
-The constructor for the NimiqWrapper object takes 3 parameters with the last being optional.
+The constructor for the NimiqWrapper object takes 4 parameters with the last two being optional.
  * `mine` specifies whether the miner should begin once consensus is reached.
  * `handlerFunctions` is the `HandlerFunctions` object which specifies all of the necessary handler functions you'd like to define.
    * Any callbacks not specified in this object use default functions that simply log appropriate console output.
  * `full` specifies whether a full node should be initialized instead of a light node.
    * This parameter is optional and defaults to false if not included.
-   
+ * `network` specifies which network to connect to.
+   * Possible values are 0, 1, 2, and 3: corresponding to the test, main, dev, and bounty networks.
+   * The default value of this parameter is 1 (main network).
+
 The connect function in the NimiqWrapper object takes 1 parameter being the the `InitInfo` object.
 
 ## Implementation Details
@@ -102,7 +105,9 @@ NimiqWrapper was designed with AngularJS in mind and so using the two together i
 
 After being unhappy with using `$timeout` in such a way, I did some research and landed upon `$evalAsync` which is available in later versions of AngularJS.  A very educational overview of this function can be seen [here](https://www.bennadel.com/blog/2605-scope-evalasync-vs-timeout-in-angularjs.htm) and the same author has an side by side comparison of `$evalAsync` and a similar function [here](https://www.bennadel.com/blog/2751-scope-applyasync-vs-scope-evalasync-in-angularjs-1-3.htm).  `$evalAsync` can be used in the same way as `$apply`, except it will always ensure that the function is run at the end of the current digest or start of the next.  This is much faster than `$timeout`, get's the point clearly across, and fixes the issue with trying to digest in the middle of a digest cycle.
 ### NodeJS
-I'm not too experienced with NodeJS although I figured my experience with JavaScript would carry over.  While the code seems like it should work fine, I'm having issues exporting the classes properly as a NodeJS module.  If anyone would like to volunteer to help me set it up, I can be reached on the Nimiq discord (@Chugwig) or a pull request can be made on this repo.
+NimiqWrapper can be used within NodeJS using the same file as would be used in a client side solution.  The most important change required is ** to modify the NimiqWrapper.js file to set WRAPPING_NODE to true ** .  The first thing done by the wrapper is to print whether it's running in JS or NodeJS mode, so it's easy to tell if this has been forgotten.  If WRAPPING_NODE is left set to false, the necessary classes won't be exported as a NodeJS module.
+
+The only requirement for NimiqWrapper to run in NodeJS is for ** @nimiq/core ** to be installed in the path of your application.  Alternatively (actually recommended), you can add this package to your package.json file and no issues should occur.
 ### Other Implementations
 If anyone uses NimiqWrapper with a framework not discussed above, please reach out to me or issue a pull request detailing any implementation details of that framework.  I imagine that NimiqWrapper won't work perfectly on at least one framework, but it was designed to work in most environments and I would like to document any exceptions to that.
 
