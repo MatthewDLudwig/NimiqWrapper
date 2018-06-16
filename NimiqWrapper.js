@@ -7,58 +7,7 @@ if (WRAPPING_NODE) {
 }
 
 class NimiqUtils {
-	static stringToData(s) {
-		let bytes = [];
-		for (let i = 0; i < s.length; ++i) {
-			bytes.push(s.charCodeAt(i));
-		}
-		return new Uint8Array(bytes);
-	}
-
-	static dataToString(d) {
-		let chars = "";
-		for (let i = 0; i < d.length; i++) {
-			chars += String.fromCharCode(d[i]);
-		}
-		return chars;
-	}
-
-	static createMessage(sender, nonceA, nonceB, nonceC, data) {
-		let it = null;
-		try {
-			it = new Nimiq.ExtendedTransaction(
-					   sender, 0,
-					   Nimiq.Address.fromUserFriendlyAddress("NQ07 0000 0000 0000 0000 0000 0000 0000 0000"), 0,
-					   nonceA, nonceB, nonceC,
-					   0, NimiqUtils.stringToData(data), new Uint8Array(0), 0);
-		} catch (err) {
-			console.error("Nimiq Message Error - " + err.message);
-		}
-
-		return it;
-	}
-
-	static signMessage(message, signer) {
-		if (message.sender.equals(signer.address)) {
-			return signer.signTransaction(message);
-		} else {
-			return null;
-		}
-	}
-
-	static confirmMessage(message, proof, a, b, c) {
-		let sender = message.sender;
-		let nonceA = message.value;
-		let nonceB = message.fee;
-		let nonceC = message.validityStartHeight;
-
-		if (proof.isSignedBy(sender) && nonceA == a && nonceB == b && nonceC == c) {
-			return NimiqUtils.dataToString(message.data);
-		} else {
-			return null;
-		}
-	}
-
+//Transformation Utils
 	static bufferToString(ser) {
 		let text = "";
 		for (let i = 0; i < ser.length; i++) {
@@ -81,21 +30,59 @@ class NimiqUtils {
 		return new Nimiq.SerialBuffer(ser);
 	}
 
+	static stringToData(s) {
+		let bytes = [];
+		for (let i = 0; i < s.length; ++i) {
+			bytes.push(s.charCodeAt(i));
+		}
+		return new Uint8Array(bytes);
+	}
+
+	static dataToString(d) {
+		let chars = "";
+		for (let i = 0; i < d.length; i++) {
+			chars += String.fromCharCode(d[i]);
+		}
+		return chars;
+	}
+
+//Message Utils
+
+	function createMessageFromData(keyPair, data) {
+		return Nimiq.Signature.create(keyPair.privateKey, keyPair.publicKey, data);
+	}
+
+	function createMessageFromString(keyPair, str) {
+		return NimiqUtils.createMessageFromData(keyPair, NimiqUtils.stringToData(str));
+	}
+
+	function verifyMessageWithData(sig, key, data) {
+		return sig.verify(key, data);
+	}
+
+	function verifyMessageWithString(sig, key, str) {
+		return NimiqUtils.verifyWithData(sig, key, NimiqUtils.stringToData(str));
+	}
+
+//Serialize Utils
+
 	static serializeMessage(message) {
 		return NimiqUtils.bufferToString(message.serialize());
 	}
 
 	static unserializeMessage(text) {
-		return Nimiq.ExtendedTransaction.unserialize(NimiqUtils.stringToBuffer(text));
+		return Nimiq.Signature.unserialize(NimiqUtils.stringToBuffer(text));
 	}
 
-	static serializeProof(proof) {
-		return NimiqUtils.bufferToString(proof.serialize());
+	static async serializePublicKey(key) {
+		return NimiqUtils.bufferToString(key.serialize());
 	}
 
-	static unserializeProof(text) {
-		return Nimiq.SignatureProof.unserialize(NimiqUtils.stringToBuffer(text));
+	static async unserializeEncryptedWallet(key) {
+		return Nimiq.PublicKey.unserialize(NimiqUtils.stringToBuffer(key));
 	}
+
+//Wallet Utils
 
 	static async serializeEncryptWallet(wall, pass) {
 		return NimiqUtils.bufferToString(await wall.exportEncrypted(pass));
@@ -105,7 +92,7 @@ class NimiqUtils {
 		return await Nimiq.Wallet.loadEncrypted(NimiqUtils.stringToBuffer(seed), key);
 	}
 
-	static async getNewWallet(pass) {
+	static async getNewEncryptedWallet(pass) {
 		let wall = await Nimiq.Wallet.generate();
 		return NimiqUtils.serializeEncryptWallet(wall, pass);
 	}

@@ -137,45 +137,11 @@ As a developer, I like to reduce the amount of repeated code across my projects 
    * Most interactions with this object can be done through the MinerWrapper object, but in some cases the direct object may be necessary.
 
 ## The Message System
-Thinking ahead towards possibly applications I'd like to develop using Nimiq, I've created a system for signing messages with an address.  An example of this system can be seen [here](https://www.drawpad.org/nimiq/) on my website.  This is done by abusing the ExtendedTransaction spec provided in Nimiq and details can be seen below:
- * A message consists of 3 nonces and a data field.
-   * The 3 nonces are stored in the transaction's value, fee, and validityStartHeight fields respectively.
-     * This means that the first nonce can never be 0, as all transactions (even if never sent) must transfer some value.
-   * The nonces are meant to help identify a message, and can be used to require unique messages.
-   * The data field is meant to store 8-bit integers, but for the message system stores strings.
-     * This string is converted to an array of integers by the Util method.
- * A message is first created (providing a transaction) and then signed (providing a proof).
-   * Both the message and the proof should be sent to the recipient of the message for confirmation.
-   * Confirmation consists of ensuring that the proof was signed by the sender specified in the message.
-     * Nonce values are also checked to be the same before decoding and returning the message data.
-     * Transactions that do not pass confirmation return 'null' as the data.
-   * For future improvements, verifying that the provided proof is actually the signed message would be useful.
-     * Currently I'm using a SignatureProof, but there are different proofs available that may provide the functionality required.
-     * Pull requests or reaching out to me with suggestions are both greatly appreciated.
-
-When signing a message, it's confirmed that the signer is the address specified in the message but that is all.  After creating and signing a message, both the message and proof should be serialized using the respective functions in NimiqUtils and sent to the recipient.  Once received, the recipient can unserialize the two objects (using NimiqUtils.unserializeMessage and NimiqUtils.unserializeProof) and then confirm the message to work with the value associated with it.  Possible use cases for such a feature include signing in on any site with a Nimiq wallet, sending messages to a game server that could have only come from you (or someone with access to your private key), and many more.  All necessary functions for using the message system are implemented in the NimiqUtils class and can be seen below:
- * stringToData(s)
-   * This function simply takes a string and converts it to an array of 8-bit integers.
-   * This function need not be called on the data manually, but could be useful in other cases.
- * dataToString(d)
-   * This function does the reverse of stringToData() and also need not be called manually.
- * createMessage(sender, nonceA, nonceB, nonceC, data)
-   * This function creates a Nimiq.ExtendedTransaction using the provided data.
-   * Both the sender and receiver are set to be normal accounts, with the receiver being the Nimiq Null Address.
-     * The sender should be the current wallet controlled by the user, but it's been left as a parameter in case necessary.
-   * The three nonces are assigned to the value, fee, and validityStartHeight fields.
-     * The only requirement here is that nonceA not be 0 as Nimiq transactions cannot send 0 value.
-     * These transactions will never see the actual blockchain (at least as designed) but this requirement must still be met.
-   * The provided data should be a string that will be converted to an array of integers representing each character.
- * signMessage(message, signer)
-   * This function signs a message with the provided wallet object (signer).
-   * The signer must have the same address as the one set in the message.sender field.
-   * The Nimiq.SignatureProof provided by Nimiq.Wallet.signTransaction(...) is returned.
- * confirmMessage(message, proof, a, b, c)
-   * This function accepts a message, proof, and nonce values and confirms that everything matches.
-   * The providied nonce values must match those in the message, and the proof must have been signed by the address specified in message.sender
-   * In future updates to this function, I hope to somehow confirm that the data "proof" represents is the provided message.
-   * The message.data field is returned if all values match, otherwise the null object is returned.
+Within the wrapper is a simple messaging system for use with Nimiq accounts.  The messages can either be a raw Uint8Array or a string, and will always be signed with the private key passed to the function.  The associated public key can then be transmitted along with the message (serialization recommended through NimiqUtils.serializePublicKey) and the message verified by the recipient.  This messaging system is useful for tasks ranging from simply proving ownership of an account, to passing messages between the client (key holder) and server.  The message system is NOT meant for passing encrypted messages, but instead messages that are known to come from the key holder.  Messages should never be re-used and should ideally include a timestamp or unique ID in order to prevent reuse.
+ * A message can be created using either "createMessageFromData" or "createMessageFromString" and both will return a Nimiq.Signature object.
+ * A message can be verified using either "verifyMessageWithData" or "verifyMessageWithString" depending on how it was originally created.
+   * Both functions will return a boolean specifying whether or not the message matches with the passed in public key and data.
+   * Keep in mind that if a string is passed in to the "verifyMessageWithData" function, the result will always be true.
 
 ## Provided Classes
 ### NimiqWrapper
@@ -193,7 +159,7 @@ This horribly named class (as there's already another NimiqUtils class and will 
    * This leaves you with a more familiar representation of a "private key" although this is only similar in the fact that both let you access a cryptocurrency's account.
  * unserializeEncryptedWallet(seed, key)
    * A wallet can be recovered by using this function where 'seed' is the value returned by serializeEncryptWallet(...), and 'key' is the password used to encrypt the wallet.
- * getNewWallet(pass)
+ * getNewEncryptedWallet(pass)
    * Generates a new wallet and encrypts it using serializeEncryptWallet(...) returning that same value.
    * The wallet that was created can be accessed by unserializing and decrypting the returned value.
    * While this is a bit of a hassle, this is done to ensure that the returned value and desired password result in the correct wallet.
