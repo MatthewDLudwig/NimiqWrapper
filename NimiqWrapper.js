@@ -61,7 +61,7 @@ class NimiqUtils {
 	}
 
 	static verifyMessageWithString(sig, key, str) {
-		return NimiqUtils.verifyWithData(sig, key, NimiqUtils.stringToData(str));
+		return NimiqUtils.verifyMessageWithData(sig, key, NimiqUtils.stringToData(str));
 	}
 
 //Serialize Utils
