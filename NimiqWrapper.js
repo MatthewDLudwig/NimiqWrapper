@@ -48,19 +48,19 @@ class NimiqUtils {
 
 //Message Utils
 
-	function createMessageFromData(keyPair, data) {
+	static createMessageFromData(keyPair, data) {
 		return Nimiq.Signature.create(keyPair.privateKey, keyPair.publicKey, data);
 	}
 
-	function createMessageFromString(keyPair, str) {
+	static createMessageFromString(keyPair, str) {
 		return NimiqUtils.createMessageFromData(keyPair, NimiqUtils.stringToData(str));
 	}
 
-	function verifyMessageWithData(sig, key, data) {
+	static verifyMessageWithData(sig, key, data) {
 		return sig.verify(key, data);
 	}
 
-	function verifyMessageWithString(sig, key, str) {
+	static verifyMessageWithString(sig, key, str) {
 		return NimiqUtils.verifyWithData(sig, key, NimiqUtils.stringToData(str));
 	}
 
