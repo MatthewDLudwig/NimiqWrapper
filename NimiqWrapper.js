@@ -288,9 +288,9 @@ class NimiqWrapper {
 			} else {
 				Nimiq.init(innerInit, function (error) {
 					if (error === Nimiq.ERR_WAIT) {
-						reject("MULTIPLE");
+						reject("MULTIPLENODES");
 					} else if (error === Nimiq.ERR_UNSUPPORTED) {
-						reject("TOOOLD");
+						reject("OLDBROWSER");
 					} else {
 						reject("UNKNOWN");
 					}
