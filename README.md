@@ -8,7 +8,7 @@ NimiqWrapper.js is a file containing 3 classes that allow for easier use of the 
 
 Both wrapping classes were designed in such a way that all interesting events can be listened to using callback functions and both wrapped objects are accessible to the programmer in order to perform advanced functions.  This was done in order to have maximum compatibility with AngularJS but works just as well with NodeJS or any other UI framework.  For UI frameworks, the only thing to remember is that the callbacks may be called outside of the digest cycle / whatever your UI framework calls it.  There's a section in this readme specifically about dealing with this issue in AngularJS and if anyone solves any issues with other frameworks, they can submit a pull request to add a section.
 
-<a name="general"/>
+<a name="general"> </a>
 ## General Details
 ### Getting Started
 In order to fully connect to the Nimiq Network,, two objects are required.  The first is the `InitInfo` object and the second is the `HandlerFunctions` object.  The `InitInfo` object is meant to contain information on the wallet, mining address, and other information needed to connect to the Nimiq Network.  This object will be passed to the connect(...) function of the NimiqWrapper object.  The `HandlerFunctions` object is meant to contain the callback functions used to obtain information from the wrapper.  This object will be passed to the constructor of the NimiqWrapper object.  Descriptions of the possible fields in each object are given below, and if not present default values will be used.
