@@ -114,8 +114,8 @@ class MinerWrapper {
 		this.previousState = 2;
 		this.poolPayout = 0;
 
-		let host = initInfo.hasOwnProperty("poolHost") ? initInfo.poolHost : "pool.porkypool.com";
-		let port = initInfo.hasOwnProperty("poolPort") ? initInfo.poolPort : "8444";
+		let host = initInfo.hasOwnProperty("poolHost") ? initInfo.poolHost : "us.sushipool.com";
+		let port = initInfo.hasOwnProperty("poolPort") ? initInfo.poolPort : "443";
 		let addr = Nimiq.Address.fromUserFriendlyAddress("NQ07 0000 0000 0000 0000 0000 0000 0000 0000");
 
 		if (initInfo.hasOwnProperty("mineToAddr")) {
