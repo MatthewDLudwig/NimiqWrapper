@@ -13,6 +13,19 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
 ## Table of Contents  
 - [Installation](#installation)
   - [In Browser](#in-browser)
+  - [In NodeJS](#in-nodejs)
+- [Basics](#basics)
+  - [Initialization](#initialization)
+  - [Common NimiqWrapper Patterns](#common-nimiqwrapper-patterns)
+- [The Objects](#the-objects)
+  - [NimiqWrapper](#nimiqwrapper)
+  - [KeyguardHelper](#keyguardhelper)
+  - [MinerHelper](#minerhelper)
+  - [AccountHelper](#accounthelper)
+  - [TransactionHelper](#transactionhelper)
+  - [SignatureHelper](#signaturehelper)
+  - [UtilHelper](#utilhelper)
+- [Licensing](#licensing)
 
 ## Installation
 
@@ -75,9 +88,6 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
 ### NimiqWrapper
 
 ### KeyguardHelper
-- Variables
-  - `theWrapper`
-    - A reference to the parent `NimiqWrapper` object for this helper.
 - Functions
   - `initKeyguard`
     - This function is called to initalize the keyguard client.
@@ -197,7 +207,6 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
           - Uint8Array or string.
 
 ### MinerHelper
-- Variables
 - Functions
   - `initMiner`
     - This function must be called before any others in MinerHelper can be called, as it initializes the pool miner.
@@ -240,7 +249,6 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
     - The related getter function will immediately update to reflect this change.
 
 ### AccountHelper
-- Variables
 - Functions
   - `getFriendlyAddress`
     - Returns a string containing the user friendly representation of an address.
@@ -328,7 +336,6 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
         - A function that should take a single parameter, which will be the created Uint8Array buffer.
 
 ### TransactionHelper
-- Variables
 - Functions
   - `getRemainingFreeTransactionsFor`
     - This function will return the number of free transactions that the given address can send right now.
@@ -401,7 +408,6 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
         - If provided, this callback will be given the `Nimiq.Transaction` object for the transaction as it's only parameter.
 
 ### SignatureHelper
-- Variables
 - Functions
   - `signMessage`
     - This function can be used to sign a message with the given wallet, with the `Nimiq.Signature` object being returned.
@@ -430,7 +436,6 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
         - Should be a `Uint8Array`, a string, or a JS object (which will be converted to a JSON string).
 
 ### UtilHelper
-- Variables
 - Functions
   - `convertLunaToNIM`
     - This function converts the given value to its equivalent in NIM.
