@@ -86,6 +86,92 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
 ## The Objects
 
 ### NimiqWrapper
+- Functions
+  - `constructor`
+    - This function creates the wrapper object and constructs all helper objects.
+    - Parameters
+      - `options`
+        - `errorCallback`
+          - If included, this callback will be called every time an error occurs with 2 parameters:
+            - The first parameter is the location where the error occurred, which will be in the format "ClassName:FunctionName".
+            - The second parameter is the error object/message that was thrown.
+          - The default value is the Global NimiqWrapper Error Callback as described above in "Common NimiqWrapper Patterns".
+          - Function
+        - `consensusCallback`
+          - This callback will be called when the consensus status changes with a single parameter:
+            - The parameter passed to this callback will be a string: (lost|syncing|established)
+          - By default an empty callback will be used.
+          - Function
+        - `syncStatusCallback`
+          - This callback will be called while the network is being synced with a single parameter:
+            - The parameter passed to this callback will be a string: (sync-chain-proof|verify-chain-proof|sync-accounts-tree|verify-accounts-tree|sync-finalize)
+          - By default an empty callback will be used.
+          - Function
+        - `peersChangedCallback`
+          - This callback will be called when the peer list changes with no parameters.
+          - By default an empty callback will be used.
+          - Function
+        - `peerJoinedCallback`
+          - This callback will be called when a peer is connected to with a single parameter.
+            - The parameter passed to this callback will be a `Nimiq.Peer` object.
+          - By default an empty callback will be used.
+          - Function
+        - `headChangedCallback`
+          - This callback will be called when the head of the blockchain changes with no parameters.
+            - This callback will be called multiple times for each block your node processes as it catches up since the last time it was connected (exact functionality depends on node type).
+            - This callback will then be called once each time your node learns that a block was mined.
+          - By default an empty callback will be used.
+          - Function
+        - `minerChangedCallback`
+          - This callback will be called when the miner starts or stops with a single parameter.
+            - The parameter passed to this callback will be a string: (started|stopped)
+            - This callback will never be registered if the miner isn't used (MinerHelper:initMiner).
+          - By default an empty callback will be used.
+          - Function
+        - `connectionStateCallback`
+          - This callback will be called when the miner connection state changes with a single parameter:
+            - The parameter passed to this callback will be a string: (connected|connecting|disconnected)
+            - This callback will never be registered if the miner isn't used (MinerHelper:initMiner).
+          - By default an empty callback will be used.
+          - Function
+  - `initNode`
+    - This function is called to initialize the nimiq node used by the wrapper.
+    - Parameters
+      - `options`
+        - `network`
+          - This property is used to change which network the node will connect to.
+          - The mainnet is connected to by default.
+          - String: (TEST|MAIN|DEV|BOUNTY)
+        - `type`
+          - This property is used to change which type of node will be initialized.
+          - A Light node is used by default.
+          - String: (NANO|LIGHT|FULL)
+        - `debug`
+          - This property is used to indicate whether or not the `window.nimiq` object should be populated.
+            - Set this to `true` if you wish to reveal the node in the console.
+          - The default value is `false` and `window.nimiq` will be `undefined`.
+            - `window.Nimiq` is different from `window.nimiq`
+          - Boolean
+- Getters
+  - `nodeType`
+    - Returns the type of node that has been initialized as a string.
+    - Returns either: (NANO|LIGHT|FULL|UNKNOWN)
+  - `nodeReady`
+    - This getter returns whether the nimiq node has finished initializing.
+    - Ensure that this getter returns true before you do most anything with the `NimiqWrapper` object.
+      - KeyguardHelper functions are one of the few exceptions where `nodeReady` doesn't have to be `true`.
+  - `keyguardReady`
+    - This getter function returns whether the KeyguardHelper initialization function has been called.rue`.
+  - `minerReady`
+    - This getter function returns whether the MinerHelper initialization function has been called.
+  - `peerCount`
+    - Returns the number of peers that the node is currently connected.
+  - `globalHashrate`
+    - Returns the current global hashrate, calculated using the current block's difficulty.
+  - `blockReward`
+    - Returns the current block reward for mining a block.
+  - `blockHeight`
+    - Returns the current block height.
 
 ### KeyguardHelper
 - Functions
