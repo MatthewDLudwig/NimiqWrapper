@@ -25,6 +25,9 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
   - [TransactionHelper](#transactionhelper)
   - [SignatureHelper](#signaturehelper)
   - [UtilHelper](#utilhelper)
+- [Tutorials](#tutorials)
+  - [Minimum Code Needed](#minimum-code-needed)
+  - [Customizing The Wrapper](#customizing-the-wrapper)
 - [Licensing](#licensing)
 
 ## Installation
@@ -86,6 +89,19 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
 ## The Objects
 
 ### NimiqWrapper
+- Variables
+  - `keyguardHelper`
+    - The `KeyguardHelper` object for this instance of the wrapper.
+  - `minerHelper`
+    - The `MinerHelper` object for this instance of the wrapper.
+  - `accountHelper`
+    - The `AccountHelper` object for this instance of the wrapper.
+  - `transactionHelper`
+    - The `TransactionHelper` object for this instance of the wrapper.
+  - `signatureHelper`
+    - The `SignatureHelper` object for this instance of the wrapper.
+  - `utilHelper`
+    - The `UtilHelper` object for this instance of the wrapper.
 - Functions
   - `constructor`
     - This function creates the wrapper object and constructs all helper objects.
@@ -152,6 +168,12 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
           - The default value is `false` and `window.nimiq` will be `undefined`.
             - `window.Nimiq` is different from `window.nimiq`
           - Boolean
+        - `whenReady`
+          - If included, this callback will be ran once `NimiqWrapper:nodeReady` would return true.
+            - This is useful if you'd rather not have to check `nodeReady` to be sure the node is initialized.
+            - This is also useful if there's an action you want to only do once when the node is initalized.
+          - By default an empty callback will be used.
+          - Function
 - Getters
   - `nodeType`
     - Returns the type of node that has been initialized as a string.
@@ -174,6 +196,9 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
     - Returns the current block height.
 
 ### KeyguardHelper
+
+These functions can be accessed through the `keyguardHelper` property of the constructed `NimiqWrapper` object.
+
 - Functions
   - `initKeyguard`
     - This function is called to initalize the keyguard client.
@@ -293,6 +318,9 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
           - Uint8Array or string.
 
 ### MinerHelper
+
+These functions can be accessed through the `minerHelper` property of the constructed `NimiqWrapper` object.
+
 - Functions
   - `initMiner`
     - This function must be called before any others in MinerHelper can be called, as it initializes the pool miner.
@@ -335,6 +363,9 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
     - The related getter function will immediately update to reflect this change.
 
 ### AccountHelper
+
+These functions can be accessed through the `accountHelper` property of the constructed `NimiqWrapper` object.
+
 - Functions
   - `getFriendlyAddress`
     - Returns a string containing the user friendly representation of an address.
@@ -422,6 +453,9 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
         - A function that should take a single parameter, which will be the created Uint8Array buffer.
 
 ### TransactionHelper
+
+These functions can be accessed through the `transactionHelper` property of the constructed `NimiqWrapper` object.
+
 - Functions
   - `getRemainingFreeTransactionsFor`
     - This function will return the number of free transactions that the given address can send right now.
@@ -494,6 +528,9 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
         - If provided, this callback will be given the `Nimiq.Transaction` object for the transaction as it's only parameter.
 
 ### SignatureHelper
+
+These functions can be accessed through the `signatureHelper` property of the constructed `NimiqWrapper` object.
+
 - Functions
   - `signMessage`
     - This function can be used to sign a message with the given wallet, with the `Nimiq.Signature` object being returned.
@@ -522,6 +559,9 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
         - Should be a `Uint8Array`, a string, or a JS object (which will be converted to a JSON string).
 
 ### UtilHelper
+
+These functions can be accessed through the `utiHelper` property of the constructed `NimiqWrapper` object.
+
 - Functions
   - `convertLunaToNIM`
     - This function converts the given value to its equivalent in NIM.
@@ -629,6 +669,46 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
       - `whichSymbol`
         - A boolean value indicating whether the NIM symbol (`true`) or the Luna symbol (`false`) should be returned.
 
+## Tutorials
+
+### Minimum Code Needed
+
+```
+//Creates the NimiqWrapper using default callbacks.
+let wrapper = new NimiqWrapper();
+
+//Creates our node as a Light node, and connects to the mainnet.
+wrapper.initNode();
+
+//Now we can do whatever we want with NimiqWrapper!
+//Remember to check wrapper.nodeReady to ensure the node is done starting.
+```
+
+### Customizing The Wrapper
+```
+//Creates the NimiqWrapper with a head changed callback that logs the block height.
+let wrapper = new NimiqWrapper({
+  headChangedCallback: () => {
+    console.log("New block height: " + wrapper.blockHeight);
+  }
+});
+
+let appLogic = () => {
+  //Now we can do whatever we want with NimiqWrapper!
+  //We don't need to check wrapper.nodeReady as this function is only called once the node is ready.
+  let wallet = wrapper.accountHelper.createWallet();
+  console.log(wrapper.accountHelper.exportWalletToMnemonic(wallet));
+};
+
+
+//Creates our node as a Light node, and connects to the testnet.
+wrapper.initNode({
+  network: "TEST",
+  type: "LIGHT",
+  whenReady: appLogic
+});
+```
+
 ## Licensing
 NimiqWrapper is licensed under the Apache 2.0 license.  This license was chosen in order to restrict developers as little as possible and anything made using NimiqWrapper has no obligations to release source code, include the Apache 2.0 license, or pay me (the creator of NimiqWrapper) any money.
 
@@ -636,6 +716,6 @@ Any modifications made to either of the 3 classes provided with NimiqWrapper won
 
 If you'd still like to throw some money my way, I accept donations in the following ways:
  * Send NIM to:
-   * NQ89 54KX U06J 5S88 LC2Q V684 EESA KXS2 L984
+   * NQ35 6LER H8L4 1XM3 4YPB S502 SUV5 634A J7HR
  * Send ETH or tokens to:
    * 0x844a2Fcbc127980b158a04c054A22545a6f44c50
