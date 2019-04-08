@@ -3,6 +3,7 @@ NimiqWrapper.js is a file containing 3 classes that allow for easier use of the 
 
 ##### Table of Contents  
 [General Details](#general)  
+[More Stuff](#implementation-details)
 
 #### Let's all work towards a Richer future!
 
