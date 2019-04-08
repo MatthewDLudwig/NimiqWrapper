@@ -353,7 +353,7 @@ These functions can be accessed through the `minerHelper` property of the constr
   - `hashrate`
     - Return the current hashrate of the miner.
   - `poolBalance` / `payoutBalance`
-    - Returns the amount of NIM the pool iss reporting that it owes the specified miner address.
+    - Returns the amount of NIM the pool is reporting that it owes the specified miner address.
     - These two values are similar and a bit confusing.  `payoutBalance` is usually more accurate, but checking both would make sense.
   - `threads`
     - Returns the number of threads the miner is currently using in the browser.
@@ -414,7 +414,7 @@ These functions can be accessed through the `accountHelper` property of the cons
         - An incorrect password will throw an error.
       - `callback`
         - A function that will be called with the loaded wallet as it's only parameter.
-        - The callback iss only called if the wallet was imported succesfully.
+        - The callback is only called if the wallet was imported succesfully.
       - `errorCallback`
         - This is an optional callback which would be called if an error occurred while unlocking the wallet.
         - The most common error to occur will be an incorrect password being provided, so this callback is useful for detecting such an error.
@@ -697,7 +697,7 @@ let appLogic = () => {
   //Now we can do whatever we want with NimiqWrapper!
   //We don't need to check wrapper.nodeReady as this function is only called once the node is ready.
   let wallet = wrapper.accountHelper.createWallet();
-  console.log(wrapper.accountHelper.exportWalletToMnemonic(wallet));
+  alert(wrapper.accountHelper.exportWalletToMnemonic(wallet).join(" "));
 };
 
 
