@@ -44,13 +44,13 @@ class KeyguardHelper {
 
 		this.wrappedClient.chooseAddress(obj).then((addr) => {
 			callback(addr);
-        }).catch((err) => {
+		}).catch((err) => {
 			if (options.onError) {
 				options.onError(err);
 			} else {
 				this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", err);
 			}
-        });
+		});
 	}
 
 	requestSignature(callback, options = { }) {
@@ -83,13 +83,13 @@ class KeyguardHelper {
 
 		this.wrappedClient.signMessage(obj).then((signed) => {
 			callback(signed);
-        }).catch((err) => {
+		}).catch((err) => {
 			if (options.onError) {
 				options.onError(err);
 			} else {
 				this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", err);
 			}
-        });
+		});
 	}
 
 	requestTransaction(callback, options = { }) {
@@ -120,10 +120,10 @@ class KeyguardHelper {
 		if (options.data) {
 			if (typeof options.data == "string") {
 				if (options.data.trim().length > 0) {
-			        obj.extraData = new Uint8Array(options.data.length);
-			        for (let i = 0; i < options.data.length; ++i) {
-			            obj.extraData[i] = options.data.charCodeAt(i);
-			        }
+					obj.extraData = new Uint8Array(options.data.length);
+					for (let i = 0; i < options.data.length; ++i) {
+						obj.extraData[i] = options.data.charCodeAt(i);
+					}
 				}
 			} else {
 				obj.extraData = options.data;
@@ -132,13 +132,13 @@ class KeyguardHelper {
 
 		this.wrappedClient.checkout(obj).then((result) => {
 			callback(result);
-        }).catch((err) => {
+		}).catch((err) => {
 			if (options.onError) {
 				options.onError(err);
 			} else {
 				this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", err);
 			}
-        });
+		});
 	}
 }
 
@@ -174,12 +174,12 @@ class MinerHelper {
 			}
 		}
 
-        let miner = new Nimiq.SmartPoolMiner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.accounts, this.theWrapper.wrappedNode.mempool, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, Nimiq.BasePoolMiner.generateDeviceId(this.theWrapper.wrappedNode.network.config));
+		let miner = new Nimiq.SmartPoolMiner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.accounts, this.theWrapper.wrappedNode.mempool, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, Nimiq.BasePoolMiner.generateDeviceId(this.theWrapper.wrappedNode.network.config));
 		this.theWrapper.wrappedNode.miner = miner;
 		this.wrappedMiner = miner;
 
-        this.wrappedMiner.on('start', () => this.theWrapper.callbacks.minerChanged('started'));
-        this.wrappedMiner.on('stop', () => this.theWrapper.callbacks.minerChanged('stopped'));
+		this.wrappedMiner.on('start', () => this.theWrapper.callbacks.minerChanged('started'));
+		this.wrappedMiner.on('stop', () => this.theWrapper.callbacks.minerChanged('stopped'));
 		this.wrappedMiner.on('connection-state', state => {
 			if (state == Nimiq.BasePoolMiner.ConnectionState.CONNECTED) {
 				this.theWrapper.callbacks.connectionState("connected");
@@ -905,13 +905,13 @@ class NimiqWrapper {
 	get nodeType() {
 		if (this.wrappedNode.consensus instanceof Nimiq.NanoConsensus) {
 			return "NANO";
-    	} else if (this.wrappedNode.consensus instanceof Nimiq.LightConsensus) {
+		} else if (this.wrappedNode.consensus instanceof Nimiq.LightConsensus) {
 			return "LIGHT";
-    	} else if (this.wrappedNode.consensus instanceof Nimiq.FullConsensus) {
+		} else if (this.wrappedNode.consensus instanceof Nimiq.FullConsensus) {
 			return "FULL";
-    	} else {
+		} else {
 			return "UNKNOWN";
-    	}
+		}
 	}
 
 	get nodeReady() {
@@ -930,11 +930,11 @@ class NimiqWrapper {
 		return this.wrappedNode.network.peerCount;
 	}
 
-    get globalHashrate() {
-        const nBits = this.wrappedNode.blockchain.head.header.nBits;
-        const difficulty = Nimiq.BlockUtils.compactToDifficulty(nBits);
-        return difficulty * Math.pow(2, 16) / Nimiq.Policy.BLOCK_TIME;
-    }
+	get globalHashrate() {
+		const nBits = this.wrappedNode.blockchain.head.header.nBits;
+		const difficulty = Nimiq.BlockUtils.compactToDifficulty(nBits);
+		return difficulty * Math.pow(2, 16) / Nimiq.Policy.BLOCK_TIME;
+	}
 
 	get blockReward() {
 		return Nimiq.Policy.blockRewardAt(this.wrappedNode.blockchain.height);
