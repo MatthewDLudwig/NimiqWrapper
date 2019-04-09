@@ -77,7 +77,7 @@ class KeyguardHelper {
 			} else if (options.data instanceof Uint8Array) {
 				obj.message = options.data;
 			} else {
-				obj.message = JSON.stringify(options.data, null, 4);
+				obj.message = JSON.stringify(options.data, null, "\t");
 			}
 		}
 
@@ -581,7 +581,7 @@ class SignatureHelper {
 		} else if (message instanceof Uint8Array) {
 			obj.data = message;
 		} else {
-			obj.data = Nimiq.BufferUtils.fromAscii(JSON.stringify(message, null, 4));
+			obj.data = Nimiq.BufferUtils.fromAscii(JSON.stringify(message, null, "\t"));
 		}
 
 		return Nimiq.Signature.create(obj.private, obj.public, obj.data);
@@ -603,7 +603,7 @@ class SignatureHelper {
 		if (typeof message == "string") {
 			message = Nimiq.BufferUtils.fromUtf8(txDetails.data);
 		} else if (!(message instanceof Uint8Array)) {
-			message = Nimiq.BufferUtils.fromUtf8(JSON.stringify(message, null, 4));
+			message = Nimiq.BufferUtils.fromUtf8(JSON.stringify(message, null, "\t"));
 		}
 
 		return signature.verify(publicKey, message);
