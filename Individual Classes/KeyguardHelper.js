@@ -71,7 +71,7 @@ class KeyguardHelper {
 			} else if (options.data instanceof Uint8Array) {
 				obj.message = options.data;
 			} else {
-				obj.message = JSON.stringify(options.data, null, 4);
+				obj.message = JSON.stringify(options.data, null, "\t");
 			}
 		}
 
