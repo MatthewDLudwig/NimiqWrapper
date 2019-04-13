@@ -190,6 +190,16 @@ class MinerHelper {
 
 		if (this.minerOptions.pool) {
 			this.wrappedMiner = new Nimiq.SmartPoolMiner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.accounts, this.theWrapper.wrappedNode.mempool, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, Nimiq.BasePoolMiner.generateDeviceId(this.theWrapper.wrappedNode.network.config), this.minerOptions.data);
+		} else {
+			this.wrappedMiner = new Nimiq.Miner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.accounts, this.theWrapper.wrappedNode.mempool, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, this.minerOptions.data);
+
+		}
+
+		this.theWrapper.wrappedNode.miner = this.wrappedMiner;
+		this.wrappedMiner.on('start', () => this.theWrapper.callbacks.minerChanged('started'));
+		this.wrappedMiner.on('stop', () => this.theWrapper.callbacks.minerChanged('stopped'));
+
+		if (this.minerOptions.pool) {
 			this.wrappedMiner.on('connection-state', state => {
 				if (state == Nimiq.BasePoolMiner.ConnectionState.CONNECTED) {
 					this.theWrapper.callbacks.connectionState("connected");
@@ -201,16 +211,9 @@ class MinerHelper {
 					this.theWrapper.callbacks.error("MinerHelper:initMiner", "Unknown connection state occurred!");
 				}
 			});
-		} else {
-			this.wrappedMiner = new Nimiq.Miner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.accounts, this.theWrapper.wrappedNode.mempool, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, this.minerOptions.data);
 
+			this.wrappedMiner.connect(this.minerOptions.host, this.minerOptions.port);
 		}
-
-		this.theWrapper.wrappedNode.miner = this.wrappedMiner;
-		this.wrappedMiner.on('start', () => this.theWrapper.callbacks.minerChanged('started'));
-		this.wrappedMiner.on('stop', () => this.theWrapper.callbacks.minerChanged('stopped'));
-
-		this.wrappedMiner.connect(this.minerOptions.host, this.minerOptions.port);
 	}
 
 	startMining() {
