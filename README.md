@@ -36,7 +36,7 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
 - Include necessary scripts
   - Nimiq API
   - Keyguard API
-  
+
 ### In NodeJS
 - Install necessary NPM modules
   - Nimiq Module (@nimiq/core)
@@ -61,9 +61,9 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
     - KeyguardHelper is the only class that isn't dependent on `NimiqWrapper:initNode` being called before i can be used.
   - MinerHelper
     - `MinerHelper:initMiner`
-    - This function is called to initailize the pool miner (solo mining can't be done with NimiqWrapper).
-    - The addresss to mine to, along with the pool's host and port are set with this function.
-      - This function **hould not** be called again if you want to change these values.
+    - This function is called to initialize the miner (pool miner by default).
+    - The address to mine to, along with the pool's host and port are set with this function.
+      - This function **should not** be called again if you want to change these values.
     - This function will not work correctly unless `NimiqWrapper:initNode` has already been called.
 
 ### Common NimiqWrapper Patterns
@@ -207,7 +207,7 @@ These functions can be accessed through the `keyguardHelper` property of the con
         - The URL for the keyguard you wish to connect to.
         - Testnet Keyguard URL: `https://accounts.nimiq-testnet.com`
       - `appName`
-        - The name that is passed to all keyguard function calls by default and will be displayed in the "Return to ___" message.
+        - The name that is passed to all keyguard function calls by default and will be displayed in the "Return to ___ " message.
         - Each KeyguardHelper function can optionally define a different `appName` to be used for that specific function call, and the value set at initialization is only used if the function doesn't define a different one.
   - `requestAddress`
     - This function requests that the user pick one of their accounts and then that account's address and label are sent to the callback function.
@@ -327,6 +327,14 @@ These functions can be accessed through the `minerHelper` property of the constr
       - The miner will not start mining by default, and `startMining` must be called after this function to start mining.
     - Parameters:
       - `options`
+        - `soloMine`
+		  - This property can be used to solo mine instead of with a pool.
+		  - false (meaning pool miner will be used by default)
+		  - Boolean
+        - `extraData`
+		  - This property can be used to set the extraData the miner will use.
+		  - An empty Uint8Array
+		  - Uint8Array or a string.
         - `poolHost`
           - This property can be used to change which pool is connected to by the miner.
             - Do not include the port number in this property, and instead split it and use `poolPort` if necessary.
@@ -339,7 +347,7 @@ These functions can be accessed through the `minerHelper` property of the constr
           - Number
         - `address`
           - This is the address that will receive payous for the mining.
-          - Nimiq Burn Address (meaning payous will be permanently lost).
+          - Nimiq Burn Address (meaning payouts will be permanently lost).
           - `Nimiq.Wallet`, `Nimiq.Address`, or a string with the user friendly representation of the address.
   - `startMining`
     - Calling this function will tell the miner to start mining.

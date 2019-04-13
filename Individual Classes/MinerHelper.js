@@ -15,40 +15,58 @@ class MinerHelper {
 
 	initMiner(options = { }) {
 	  	this.minerOptions = {
+			pool : true,
 			addr : Nimiq.Address.fromUserFriendlyAddress("NQ07 0000 0000 0000 0000 0000 0000 0000 0000"),
+			data : new Uint8Array(0),
 			host : "us.nimpool.io",
 			port : 8444
 		};
 
+		if (options.soloMine) this.minerOptions.pool = false;
 		if (options.poolHost) this.minerOptions.host = options.poolHost;
 		if (options.poolPort) this.minerOptions.port = options.poolPort;
+		if (options.extraData) {
+			if (typeof options.extraData == "string") {
+				this.minerOptions.data = Nimiq.BufferUtils.fromAscii(options.extraData);
+			} else if (options.extraData instanceof Uint8Array) {
+				this.minerOptions.data = options.extraData;
+			} else {
+				this.theWrapper.callbacks.error("MinerHelper:initMiner", "Invalid type for extraData option, using none.");
+			}
+		}
 		if (options.address) {
-			if (obj instanceof Nimiq.Wallet) {
-				this.minerOptions.addr = obj.address;
-			} else if (obj instanceof Nimiq.Address) {
-				this.minerOptions.addr = obj;
-			} else if (typeof obj == "string") {
-				this.minerOptions.addr = Nimiq.Address.fromUserFriendlyAddress(obj);
+			if (options.address instanceof Nimiq.Wallet) {
+				this.minerOptions.addr = options.address.address;
+			} else if (options.address instanceof Nimiq.Address) {
+				this.minerOptions.addr = options.address;
+			} else if (typeof options.address == "string") {
+				this.minerOptions.addr = Nimiq.Address.fromUserFriendlyAddress(options.address);
+			} else {
+				this.theWrapper.callbacks.error("MinerHelper:initMiner", "Invalid type for address option, using Nimiq Burn Address.");
 			}
 		}
 
-		let miner = new Nimiq.SmartPoolMiner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.accounts, this.theWrapper.wrappedNode.mempool, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, Nimiq.BasePoolMiner.generateDeviceId(this.theWrapper.wrappedNode.network.config));
-		this.theWrapper.wrappedNode.miner = miner;
-		this.wrappedMiner = miner;
+		if (this.minerOptions.pool) {
+			this.wrappedMiner = new Nimiq.SmartPoolMiner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.accounts, this.theWrapper.wrappedNode.mempool, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, Nimiq.BasePoolMiner.generateDeviceId(this.theWrapper.wrappedNode.network.config), this.minerOptions.data);
+			this.wrappedMiner.on('connection-state', state => {
+				if (state == Nimiq.BasePoolMiner.ConnectionState.CONNECTED) {
+					this.theWrapper.callbacks.connectionState("connected");
+				} else if (state == Nimiq.BasePoolMiner.ConnectionState.CONNECTING) {
+					this.theWrapper.callbacks.connectionState("connecting");
+				} else if (state == Nimiq.BasePoolMiner.ConnectionState.CLOSED) {
+					this.theWrapper.callbacks.connectionState("disconnected");
+				} else {
+					this.theWrapper.callbacks.error("MinerHelper:initMiner", "Unknown connection state occurred!");
+				}
+			});
+		} else {
+			this.wrappedMiner = new Nimiq.Miner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.accounts, this.theWrapper.wrappedNode.mempool, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, this.minerOptions.data);
 
+		}
+
+		this.theWrapper.wrappedNode.miner = this.wrappedMiner;
 		this.wrappedMiner.on('start', () => this.theWrapper.callbacks.minerChanged('started'));
 		this.wrappedMiner.on('stop', () => this.theWrapper.callbacks.minerChanged('stopped'));
-		this.wrappedMiner.on('connection-state', state => {
-			if (state == Nimiq.BasePoolMiner.ConnectionState.CONNECTED) {
-				this.theWrapper.callbacks.connectionState("connected");
-			} else if (state == Nimiq.BasePoolMiner.ConnectionState.CONNECTING) {
-				this.theWrapper.callbacks.connectionState("connecting");
-			} else if (state == Nimiq.BasePoolMiner.ConnectionState.CLOSED) {
-				this.theWrapper.callbacks.connectionState("disconnected");
-			} else {
-				this.theWrapper.callbacks.error("MinerHelper:initMiner", "Unknown connection state occurred!");
-			}
-		});
 
 		this.wrappedMiner.connect(this.minerOptions.host, this.minerOptions.port);
 	}
