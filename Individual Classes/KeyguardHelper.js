@@ -103,6 +103,7 @@ class KeyguardHelper {
 			value : 0
 		};
 
+//		options.sendFrom coming soon!
 		if (options.appName) obj.appName = options.appName;
 		if (options.logoURL) obj.shopLogoUrl = options.logoURL;
 		if (options.address) obj.recipient = options.address;

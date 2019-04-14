@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <title>NimiqWrapper Demo</title>
+    <script src="https://cdn.nimiq.com/nimiq.js"></script>
+    <script src="../res/NimiqWrapper.js"></script>
+    <script>
+
+function _onConsensusEstablished() {
+    document.getElementById('message').innerText = 'Consensus established.';
+    document.getElementById('height').innerText = wrapper.blockHeight;
+    document.getElementById('address').innerText = wrapper.accountHelper.getFriendlyAddress(wallet);
+
+    _updateBalance();
+
+    // If we want to start mining.
+    // wrapper.minerHelper.startMining();
+}
+
+function _updateBalance() {
+    // Get current balance
+    wrapper.accountHelper.getBalance(wallet, (balance) => _onBalanceChanged(balance));
+}
+
+function _onBalanceChanged(balance) {
+    console.log(`New balance of ${wrapper.accountHelper.getFriendlyAddress(wallet)} is ${balance}.`);
+    document.getElementById('balance').innerText = wrapper.utilHelper.convertLunaToNIM(balance).toFixed(2);
+}
+
+function _onHeadChanged() {
+    const height = wrapper.blockHeight;
+    console.log(`Now at height ${height}.`);
+    document.getElementById('height').innerText = height;
+
+    _updateBalance();
+}
+
+function _onPeersChanged() {
+    console.log(`Now connected to ${wrapper.peerCount} peers.`);
+    document.getElementById('peers').innerText = wrapper.peerCount;
+}
+
+let wrapper = new NimiqWrapper({
+        consensusCallback : (status) => {
+                if (status == "lost") {
+                        console.error("Consensus lost");
+                } else if (status == "established") {
+                        _onConsensusEstablished();
+                }
+        },
+        headChangedCallback : () => _onHeadChanged(),
+        peersChangedCallback : () => _onPeersChanged()
+});
+let wallet = null;
+
+function init(clientType = 'full') {
+    wrapper.initNode({
+        network: "test",
+        type : clientType.toUpperCase(),
+        whenReady : () => {
+                document.getElementById('message').innerText = 'Nimiq loaded. Connecting and establishing consensus.';
+                wallet = wrapper.accountHelper.createWallet();
+                if (clientType !== "nano") {
+                        wrapper.minerHelper.initMiner({
+                                soloMine : true
+                        });
+                }
+        }
+    });
+}
+
+    </script>
+</head>
+<body>
+    <h1>Getting started with the Nimiq API</h1>
+    This html file demonstrates the most simple way to build web applications on top of the <a target="_blank" href="https://nimiq.com">Nimiq Blockchain</a>.
+    <h2>Most Simple Client</h2>
+    <p id="client-selector">Client type: <a href="#" client-type="nano">nano</a> <a href="#" client-type="light">light</a></p>
+    <div id="client-info" style="display:none">
+        <p>Status: <span id="message">Loading Nimiq.</span></p>
+        <p>Account address: <span id="address"><em>loading</em></span></p>
+        <p>Balance: <img src="nimiq_white.svg" class="nimiq_currency"> <span id="balance"><em>loading</em></span></p>
+        <p>Current block height: <span id="height"><em>loading</em></span></p>
+        <p>Current number of peers: <span id="peers"><em>loading</em></span></p>
+    </div>
+
+    <h2>Source Code</h2>
+    <a target="_blank" href="https://github.com/nimiq-network/nimiq-demo/blob/master/index.html"> View Original Version's Source Code on Github </a> <br>
+    <a target="_blank" href="https://github.com/MatthewDLudwig/NimiqWrapper/blob/master/demos/jsdemo.html"> View NimiqWrapper Version's Source Code on Github </a>
+    <style>
+        body {
+            background:teal;
+            color:white;
+            font-family: sans-serif;
+            padding: 8%;
+        }
+
+        a {
+            color:white;
+        }
+
+        img.nimiq_currency {
+            height: 12px;
+        }
+    </style>
+
+    <script>
+        /* UI Stuff */
+        document.querySelectorAll('[client-type]').forEach(el => {
+            el.addEventListener('click', () => {
+                const type = el.getAttribute('client-type');
+                window.clientType = type;
+                document.getElementById('client-selector').textContent = 'Client type: ' + type;
+                document.getElementById('client-info').style.display = 'block';
+                init(type);
+            });
+        });
+    </script>
+</body>
+</html>

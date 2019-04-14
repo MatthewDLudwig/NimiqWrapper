@@ -10,6 +10,8 @@ NimiqWrapper.js is a library wrapping around the [Nimiq Javascript API](https://
 
 The original version of NimiqWrapper thinly wrapped around the Nimiq API but only helped with initialization of the objects.  With the current version of NimiqWrapper, not only is initalization made easier, but functions have been made for commonly used code snippets found in Nimiq Apps.  Developers are still encouraged to work with the raw Nimiq API and all wrapped objects are easily accessible from the wrapper object (or the helpers within it).  My goal for this library is for new developers to easily be able to start working with Nimiq, and then as they become more comfortable they can read the wrapper's source (alongside the amazing tutorials at https://nimiq.github.io/) to do things that aren't provided by the wrapper.  I believe Nimiq has much potential, going far beyond simply mining in the browser, and I can't wait to see what the community creates (hopefully with the help of NimiqWrapper).
 
+![logo](https://raw.githubusercontent.com/MatthewDLudwig/NimiqWrapper/master/assets/color_wrapper_small.png)
+
 ## Table of Contents  
 - [Installation](#installation)
   - [In Browser](#in-browser)
@@ -34,8 +36,15 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
 
 ### In Browser
 - Include necessary scripts
-  - Nimiq API
-  - Keyguard API
+<script src="https://synth.drawpad.org/res/sites/nimiq/publish/res/NimiqWrapper.js"> </script>
+  - Nimiq Library
+    - https://cdn.nimiq.com/nimiq.js
+  - Keyguard Library
+    - https://cdn.jsdelivr.net/npm/@nimiq/accounts-client@v0.2/dist/standalone/AccountsClient.standalone.umd.js
+  - NimiqWrapper Library
+    - Use `NimiqWrapper.js` in the base directory of this repo.
+	- Or use the individual files in the `classes` directory of this repo, including them in the order specified at the top of the files.
+	- CDN in the future.
 
 ### In NodeJS
 - Install necessary NPM modules
