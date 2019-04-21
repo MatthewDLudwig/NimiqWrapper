@@ -49,9 +49,9 @@ class KeyguardHelper {
 			if (options.redirectBehavior.url) behavior.url = options.redirectBehavior.url;
 			if (options.redirectBehavior.data) behavior.data = options.redirectBehavior.data;
 			if (behavior.data) {
-				this.keyguardOptions.redirect = new RedirectRequestBehavior(behavior.url, behavior.data);
+				this.keyguardOptions.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url, behavior.data);
 			} else {
-				this.keyguardOptions.redirect = new RedirectRequestBehavior(behavior.url);
+				this.keyguardOptions.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url);
 			}
 		}
 
@@ -96,9 +96,9 @@ class KeyguardHelper {
 			if (options.redirectBehavior.url) behavior.url = options.redirectBehavior.url;
 			if (options.redirectBehavior.data) behavior.data = options.redirectBehavior.data;
 			if (behavior.data) {
-				obj.redirect = new RedirectRequestBehavior(behavior.url, behavior.data);
+				obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url, behavior.data);
 			} else {
-				obj.redirect = new RedirectRequestBehavior(behavior.url);
+				obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url);
 			}
 		}
 
@@ -147,9 +147,9 @@ class KeyguardHelper {
 			if (options.redirectBehavior.url) behavior.url = options.redirectBehavior.url;
 			if (options.redirectBehavior.data) behavior.data = options.redirectBehavior.data;
 			if (behavior.data) {
-				obj.redirect = new RedirectRequestBehavior(behavior.url, behavior.data);
+				obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url, behavior.data);
 			} else {
-				obj.redirect = new RedirectRequestBehavior(behavior.url);
+				obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url);
 			}
 		}
 		if (options.address) obj.signer = options.address;
@@ -209,9 +209,9 @@ class KeyguardHelper {
 			if (options.redirectBehavior.url) behavior.url = options.redirectBehavior.url;
 			if (options.redirectBehavior.data) behavior.data = options.redirectBehavior.data;
 			if (behavior.data) {
-				obj.redirect = new RedirectRequestBehavior(behavior.url, behavior.data);
+				obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url, behavior.data);
 			} else {
-				obj.redirect = new RedirectRequestBehavior(behavior.url);
+				obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url);
 			}
 		}
 		if (options.logoURL) obj.shopLogoUrl = options.logoURL;
