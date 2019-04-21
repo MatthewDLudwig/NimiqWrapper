@@ -5,18 +5,63 @@ class KeyguardHelper {
 		Variables:
 			theWrapper
 			wrappedClient
-			appName
+			keyguardOptions
 	*/
+
 
 	constructor(wrapper) {
 		this.theWrapper = wrapper;
 		this.wrappedClient = null;
-		this.appName = "Nimiq Application";
+	  	this.keyguardOptions = {
+			name : "Nimiq Application",
+			url : "https://accounts.nimiq-testnet.com",
+			redirect : null
+		};
+
+		this.redirectSuccessHandler = (r, d) => { };
+		this.redirectErrorHandler = (e, d) => { };
+		this.defaultErrorHandler = (e, d) => { this.theWrapper.callbacks.error("KeyguardHelper:getRedirectResponse", e); };
 	}
 
-	initKeyguard(keyguardURL, appName) {
-		this.wrappedClient = new AccountsClient(keyguardURL);
-		this.appName = appName;
+	redirectSuccess(result, data) {
+		this.redirectSuccessHandler(result, data);
+	}
+
+	redirectError(error, data) {
+		this.redirectErrorHandler(error, data);
+	}
+
+	initKeyguard(options = { }) {
+		if (options.appName) this.keyguardOptions.name = options.appName;
+		if (options.keyguardURL) this.keyguardOptions.url = options.keyguardURL;
+		if (options.redirectBehavior) {
+			let behavior = {
+				url : null, //Uses the requesting url.
+				data : null //No data.
+			};
+
+			if (options.redirectBehavior.url) behavior.url = options.redirectBehavior.url;
+			if (options.redirectBehavior.data) behavior.data = options.redirectBehavior.data;
+			if (behavior.data) {
+				this.keyguardOptions.redirect = new RedirectRequestBehavior(behavior.url, behavior.data);
+			} else {
+				this.keyguardOptions.redirect = new RedirectRequestBehavior(behavior.url);
+			}
+		}
+
+
+		let onSuccess = (r, d) => this.redirectSuccess(r, d);
+		let onError = (e, d) => this.redirectError(e, d);
+		this.wrappedClient = new AccountsClient(this.keyguardOptions.url);
+		this.wrappedClient.on(AccountsClient.RequestType.CHOOSE_ADDRESS, onSuccess, onError);
+		this.wrappedClient.on(AccountsClient.RequestType.SIGN_MESSAGE, onSuccess, onError);
+		this.wrappedClient.on(AccountsClient.RequestType.CHECKOUT, onSuccess, onError);
+	}
+
+	getRedirectResponse(onSuccess, onError = this.defaultErrorHandler) {
+		this.redirectSuccessHandler = onSuccess;
+		this.redirectErrorHandler = onError;
+		this.wrappedClient.checkRedirectResponse();
 	}
 
 	requestAddress(callback, options = { }) {
@@ -31,12 +76,34 @@ class KeyguardHelper {
 		}
 
 		let obj = {
-			appName : this.appName
+			appName : this.keyguardOptions.name,
+			redirect : this.keyguardOptions.redirect
 		};
 
 		if (options.appName) obj.appName = options.appName;
+		if (options.redirectBehavior) {
+			let behavior = {
+				url : null, //Uses the requesting url.
+				data : null //No data.
+			};
 
-		this.wrappedClient.chooseAddress(obj).then((addr) => {
+			if (options.redirectBehavior.url) behavior.url = options.redirectBehavior.url;
+			if (options.redirectBehavior.data) behavior.data = options.redirectBehavior.data;
+			if (behavior.data) {
+				obj.redirect = new RedirectRequestBehavior(behavior.url, behavior.data);
+			} else {
+				obj.redirect = new RedirectRequestBehavior(behavior.url);
+			}
+		}
+
+		let promise = null;
+		if (obj.redirect) {
+			promise = this.wrappedClient.chooseAddress(obj, obj.redirect)
+		} else {
+			promise = this.wrappedClient.chooseAddress(obj)
+		}
+
+		promise.then((addr) => {
 			callback(addr);
 		}).catch((err) => {
 			if (options.onError) {
@@ -59,11 +126,26 @@ class KeyguardHelper {
 		}
 
 		let obj = {
-			appName : this.appName,
+			appName : this.keyguardOptions.name,
+			redirect : this.keyguardOptions.redirect,
 			message : "Please sign this!"
 		};
 
 		if (options.appName) obj.appName = options.appName;
+		if (options.redirectBehavior) {
+			let behavior = {
+				url : null, //Uses the requesting url.
+				data : null //No data.
+			};
+
+			if (options.redirectBehavior.url) behavior.url = options.redirectBehavior.url;
+			if (options.redirectBehavior.data) behavior.data = options.redirectBehavior.data;
+			if (behavior.data) {
+				obj.redirect = new RedirectRequestBehavior(behavior.url, behavior.data);
+			} else {
+				obj.redirect = new RedirectRequestBehavior(behavior.url);
+			}
+		}
 		if (options.address) obj.signer = options.address;
 		if (options.data) {
 			if (typeof options.data == "string") {
@@ -75,7 +157,14 @@ class KeyguardHelper {
 			}
 		}
 
-		this.wrappedClient.signMessage(obj).then((signed) => {
+		let promise = null;
+		if (obj.redirect) {
+			promise = this.wrappedClient.signMessage(obj, obj.redirect)
+		} else {
+			promise = this.wrappedClient.signMessage(obj)
+		}
+
+		promise.then((signed) => {
 			callback(signed);
 		}).catch((err) => {
 			if (options.onError) {
@@ -98,13 +187,29 @@ class KeyguardHelper {
 		}
 
 		let obj = {
-			appName : this.appName,
+			appName : this.keyguardOptions.name,
+			redirect : this.keyguardOptions.redirect,
 			recipient : "NQ07 0000 0000 0000 0000 0000 0000 0000 0000",
 			value : 0
 		};
 
 		if (options.appName) obj.appName = options.appName;
+		if (options.redirectBehavior) {
+			let behavior = {
+				url : null, //Uses the requesting url.
+				data : null //No data.
+			};
+
+			if (options.redirectBehavior.url) behavior.url = options.redirectBehavior.url;
+			if (options.redirectBehavior.data) behavior.data = options.redirectBehavior.data;
+			if (behavior.data) {
+				obj.redirect = new RedirectRequestBehavior(behavior.url, behavior.data);
+			} else {
+				obj.redirect = new RedirectRequestBehavior(behavior.url);
+			}
+		}
 		if (options.logoURL) obj.shopLogoUrl = options.logoURL;
+		if (options.sendFrom) obj.sender = options.sendFrom;
 		if (options.address) obj.recipient = options.address;
 		if (options.addrType) obj.recipientType = options.addrType;
 		if (options.amount) obj.value = options.amount;
@@ -124,7 +229,14 @@ class KeyguardHelper {
 			}
 		}
 
-		this.wrappedClient.checkout(obj).then((result) => {
+		let promise = null;
+		if (obj.redirect) {
+			promise = this.wrappedClient.checkout(obj, obj.redirect)
+		} else {
+			promise = this.wrappedClient.checkout(obj)
+		}
+
+		promise.then((result) => {
 			callback(result);
 		}).catch((err) => {
 			if (options.onError) {

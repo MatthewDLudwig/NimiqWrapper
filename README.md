@@ -212,12 +212,41 @@ These functions can be accessed through the `keyguardHelper` property of the con
   - `initKeyguard`
     - This function is called to initalize the keyguard client.
     - Parameters
-      - `keyguardURL`
-        - The URL for the keyguard you wish to connect to.
-        - Testnet Keyguard URL: `https://accounts.nimiq-testnet.com`
-      - `appName`
-        - The name that is passed to all keyguard function calls by default and will be displayed in the "Return to ___ " message.
-        - Each KeyguardHelper function can optionally define a different `appName` to be used for that specific function call, and the value set at initialization is only used if the function doesn't define a different one.
+      - `options`
+        - `keyguardURL`
+		  - The URL for the accounts manager you wish to connect to.
+		  	- Testnet Keyguard URL: `https://accounts.nimiq-testnet.com`
+		  - Default value used if none is provided is the testnet keyguard URL.
+		  - String
+		- `appName`
+		  - The name that is passed to all keyguard function calls by default and will be displayed in the "Return to ___ " message.
+		    - Each KeyguardHelper function can optionally define a different `appName` to be used for that specific function call, and the value set at initialization is only used if the function doesn't define a different one.
+		  - Default value is "Nimiq Application"
+		  - String
+        - `redirectBehavior`
+		  - An object that if defined will have the keyguard open via redirecting to the keyguard and then back to your application rather than by opening a popup.
+		    - This object will be used for all `requestXXXXX` functions in KeyguardHelper, but can be overridden for that specific call.
+		  - Default value is `null` meaning a popup will open with each keyguard call.
+		  - Object with the following parameters:
+		  	- `url`
+			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
+			- `data`
+			  - An object which can be passed to the keyguard and that will be accessible via the `KeyguardHelper:getRedirectResponse` function after the redirect.
+  - `getRedirectResponse`
+    - This function checks whether there current page came from a redirect from the keyguard and if so calls either the success or error callback.
+	  - Calling this function repeatedly will always react the exact same, be careful otherwise you'll respond to the same event multiple times.
+	    - Weirdly, when you refresh the page calling this function will do nothing even though the URL (which holds the returned keyguard info in the parameters) doesn't change.
+	  - If not using popups, the callbacks passed to the `requestXXXXX` functions will not be called and this function must be used instead.
+	- Parameters
+	  - `onSuccess`
+	    - The callback to call if the keyguard request was completed successfully.  The callback should take two parameters:
+		  - `result` which contains the same data that would have been returned to the callback passed to the `requestXXXXX` functions.
+		  - `data` which contains the data passed to the keyguard with `redirectBehavior.data` so you can maintain state in between redirects.
+  	  - `onSuccess`
+  	    - The callback to call if the keyguard request wasn't completed correctly.  The callback should take two parameters:
+  		  - `error` which contains the thrown error.
+  		  - `data` which contains the data passed to the keyguard with `redirectBehavior.data` so you can maintain state in between redirects.
+		- This parameter is optional and if not included the Global NimiqWrapper Error Callback will be used.
   - `requestAddress`
     - This function requests that the user pick one of their accounts and then that account's address and label are sent to the callback function.
     - Parameters
@@ -236,6 +265,17 @@ These functions can be accessed through the `keyguardHelper` property of the con
             - Only applies for the ingle function call.
           - The default `appName` set in `initKeyguard`.
           - String
+        - `redirectBehavior`
+		  - An object that if defined will have the keyguard open via redirecting to the keyguard and then back to your application rather than by opening a popup.
+		    - This object will be used instead of the object specified during `initKeyguard`.  Can be used to:
+			  - Use a popup for a specific function call when by default all other calls use redirects.
+			  - Use a redirect for a specific function call when by default all other calls use popups.
+		  - Default value is `null` meaning a popup will open with each keyguard call.
+		  - Object with the following parameters:
+		  	- `url`
+			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
+			- `data`
+			  - An object which can be passed to the keyguard and that will be accessible via the `KeyguardHelper:getRedirectResponse` function after the redirect.
   - `requestSignature`
     - This function requests that the user sign a given message with an account of their choosing (or the developer can request a specific one)
     - Parameters
@@ -256,6 +296,17 @@ These functions can be accessed through the `keyguardHelper` property of the con
             - Only applies for the ingle function call.
           - The default `appName` set in `initKeyguard`.
           - String
+        - `redirectBehavior`
+		  - An object that if defined will have the keyguard open via redirecting to the keyguard and then back to your application rather than by opening a popup.
+		    - This object will be used instead of the object specified during `initKeyguard`.  Can be used to:
+			  - Use a popup for a specific function call when by default all other calls use redirects.
+			  - Use a redirect for a specific function call when by default all other calls use popups.
+		  - Default value is `null` meaning a popup will open with each keyguard call.
+		  - Object with the following parameters:
+		  	- `url`
+			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
+			- `data`
+			  - An object which can be passed to the keyguard and that will be accessible via the `KeyguardHelper:getRedirectResponse` function after the redirect.
         - `data`
           - This is the message to be signed by the user.
           - "Please sign this!"
@@ -283,10 +334,27 @@ These functions can be accessed through the `keyguardHelper` property of the con
             - Only applies for the ingle function call.
           - The default `appName` set in `initKeyguard`.
           - String
+        - `redirectBehavior`
+		  - An object that if defined will have the keyguard open via redirecting to the keyguard and then back to your application rather than by opening a popup.
+		    - This object will be used instead of the object specified during `initKeyguard`.  Can be used to:
+			  - Use a popup for a specific function call when by default all other calls use redirects.
+			  - Use a redirect for a specific function call when by default all other calls use popups.
+		  - Default value is `null` meaning a popup will open with each keyguard call.
+		  - Object with the following parameters:
+		  	- `url`
+			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
+			- `data`
+			  - An object which can be passed to the keyguard and that will be accessible via the `KeyguardHelper:getRedirectResponse` function after the redirect.
         - `logoURL`
           - This property can be used to define a picture which will be shown to the user representing the address rather than the default Iqon for that address.
             - The provided URL must be on the same domain as the site the function is being called from.
           - NULL (meaning that the Account Iqon for the address will be used)
+          - String
+        - `sendFrom`
+          - The address you are requesting the user send from.
+		    - Specifying an address the user doesn't have in their keyguard is the same as not specifying at all.
+			- This function is most often used after requesting the user choose an address with `requestAddress`.
+          - NULL (meaning that the user will be prompted to choose which of their accounts they want to send from)
           - String
         - `address`
           - The address the transaction is being sent to, in the friendly format.
@@ -372,6 +440,10 @@ These functions can be accessed through the `minerHelper` property of the constr
   - `poolBalance` / `payoutBalance`
     - Returns the amount of NIM the pool is reporting that it owes the specified miner address.
     - These two values are similar and a bit confusing.  `payoutBalance` is usually more accurate, but checking both would make sense.
+  - `maxThreads`
+    - Returns the maximum number of threads you're recommended to use on the platform.
+	  - For the browser, `window.navigator.hardwareConcurrency` is used.
+	  - For NodeJS, `require('os').cpus().length` is used.
   - `threads`
     - Returns the number of threads the miner is currently using in the browser.
 - Setters

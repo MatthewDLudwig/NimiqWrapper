@@ -69,7 +69,7 @@ class MinerHelper {
 					this.theWrapper.callbacks.error("MinerHelper:initMiner", "Unknown connection state occurred!");
 				}
 			});
-			
+
 			this.wrappedMiner.connect(this.minerOptions.host, this.minerOptions.port);
 		}
 	}
@@ -116,6 +116,14 @@ class MinerHelper {
 
 	get payoutBalance() {
 		return this.wrappedMiner.confirmedBalance;
+	}
+
+	get maxThreads() {
+		if (WRAPPING_NODE) {
+			return require('os').cpus().length;
+		} else {
+			return window.navigator.hardwareConcurrency;
+		}
 	}
 
 	get threads() {
