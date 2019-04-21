@@ -228,6 +228,10 @@ These functions can be accessed through the `keyguardHelper` property of the con
 		    - This object will be used for all `requestXXXXX` functions in KeyguardHelper, but can be overridden for that specific call.
 		  - Default value is `null` meaning a popup will open with each keyguard call.
 		  - Object with the following parameters:
+		  	- `popup`
+			  - A boolean property specifying whether to use redirects (false) or popups (true).
+			  - The default value is `false` and it's pointless to use it on the `initKeyguard` function.
+			  - For the `requestXXXXX` functions it can be used to specify that a popup should be used if you had previously specified redirects should be used in `initKeyguard`.
 		  	- `url`
 			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
 			- `data`
@@ -272,6 +276,9 @@ These functions can be accessed through the `keyguardHelper` property of the con
 			  - Use a redirect for a specific function call when by default all other calls use popups.
 		  - Default value is `null` meaning a popup will open with each keyguard call.
 		  - Object with the following parameters:
+		  	- `popup`
+			  - A boolean property specifying whether to use redirects (false) or popups (true).
+			  - The default value is `false` and can be used to specify that a popup should be used if you had previously specified redirects should be used in `initKeyguard`.
 		  	- `url`
 			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
 			- `data`
@@ -303,6 +310,9 @@ These functions can be accessed through the `keyguardHelper` property of the con
 			  - Use a redirect for a specific function call when by default all other calls use popups.
 		  - Default value is `null` meaning a popup will open with each keyguard call.
 		  - Object with the following parameters:
+		  	- `popup`
+			  - A boolean property specifying whether to use redirects (false) or popups (true).
+			  - The default value is `false` and can be used to specify that a popup should be used if you had previously specified redirects should be used in `initKeyguard`.
 		  	- `url`
 			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
 			- `data`
@@ -341,6 +351,9 @@ These functions can be accessed through the `keyguardHelper` property of the con
 			  - Use a redirect for a specific function call when by default all other calls use popups.
 		  - Default value is `null` meaning a popup will open with each keyguard call.
 		  - Object with the following parameters:
+		  	- `popup`
+			  - A boolean property specifying whether to use redirects (false) or popups (true).
+			  - The default value is `false` and can be used to specify that a popup should be used if you had previously specified redirects should be used in `initKeyguard`.
 		  	- `url`
 			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
 			- `data`
