@@ -96,6 +96,39 @@ class TransactionHelper {
 		}
 	}
 
+	watchForTransactionsInvolving(obj, callback) {
+		let watchAddr = null;
+		if (obj instanceof Nimiq.Wallet) {
+			watchAddr = obj.address;
+		} else if (obj instanceof Nimiq.Address) {
+			watchAddr = obj;
+		} else if (typeof obj == "string") {
+			watchAddr = Nimiq.Address.fromUserFriendlyAddress(obj);
+		}
+
+		if (watchAddr == null) {
+			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsTo", "Parameter type incompatible with function.");
+		} else {
+			if (this.theWrapper.nodeType == "NANO") {
+				nimiq.consenus.addSubscriptions(watchAddr);
+			}
+
+			let trackID = this.theWrapper.wrappedNode.mempool.on("transaction-added", (tx) => {
+				if (tx.sender.equals(watchAddr) || tx.recipient.equals(watchAddr)) {
+					callback(tx);
+				}
+			});
+
+			return {
+				type : "all",
+				watching : watchAddr.toUserFriendlyAddress(),
+				stopWatching : () => {
+					this.theWrapper.wrappedNode.mempool.off("transaction-added", trackID);
+				}
+			}
+		}
+	}
+
 	sendTransaction(fromWallet, options = { }, callback = (receipt) => { }) {
 		let txDetails = {
 			sender : fromWallet,

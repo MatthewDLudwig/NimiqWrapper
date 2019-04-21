@@ -574,7 +574,7 @@ These functions can be accessed through the `transactionHelper` property of the 
   - `watchForTransactionsTo`
     - This function will watch the mempool for any new transactions being sent **to** the given address and will return an object with the following properties:
       - `type`
-        - Always equal to `to` and is usefull for keeping track if you hve multiple watchers going.
+        - Always equal to `to` and is useful for keeping track if you have multiple watchers going.
       - `watching`
         - The user friendly representation of the address being watched.  Useful when multiple watcher are going.
       - `stopWatching`
@@ -588,11 +588,25 @@ These functions can be accessed through the `transactionHelper` property of the 
   - `watchForTransactionsFrom`
     - This function will watch the mempool for any new transactions being sent **from** the given address and will return an object with the following properties:
       - `type`
-        - Always equal to `from` and is usefull for keeping track if you hve multiple watchers going.
+        - Always equal to `from` and is useful for keeping track if you have multiple watchers going.
       - `watching`
         - The user friendly representation of the address being watched.  Useful when multiple watcher are going.
       - `stopWatching`
         - This function can be called at any time to tell the wrapper to stop listening for transactions sent from the address.
+    - Parameters
+      - `obj`
+        - Represents the address being inspected.
+        - Should be a `Nimiq.Wallet`, `Nimiq.Address`, or aa string with the user friendly representation of the address.
+      - `callback`
+        - Should be a function which take a single parameter (a `Nimiq.Transaction` object).
+  - `watchForTransactionsInvolving`
+    - This function will watch the mempool for any new transactions involving (both to and from) the given address and will return an object with the following properties:
+      - `type`
+        - Always equal to `all` and is useful for keeping track if you have multiple watchers going.
+      - `watching`
+        - The user friendly representation of the address being watched.  Useful when multiple watcher are going.
+      - `stopWatching`
+        - This function can be called at any time to tell the wrapper to stop listening for transactions sent to the address.
     - Parameters
       - `obj`
         - Represents the address being inspected.
