@@ -116,22 +116,19 @@ class KeyguardHelper {
 			}
 		}
 
-		let promise = null;
 		if (obj.redirect) {
-			promise = this.wrappedClient.chooseAddress(obj, obj.redirect)
+			this.wrappedClient.chooseAddress(obj, obj.redirect);
 		} else {
-			promise = this.wrappedClient.chooseAddress(obj)
+			this.wrappedClient.chooseAddress(obj).then((addr) => {
+				callback(addr);
+			}).catch((err) => {
+				if (options.onError) {
+					options.onError(err);
+				} else {
+					this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", err);
+				}
+			});
 		}
-
-		promise.then((addr) => {
-			callback(addr);
-		}).catch((err) => {
-			if (options.onError) {
-				options.onError(err);
-			} else {
-				this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", err);
-			}
-		});
 	}
 
 	requestSignature(callback, options = { }) {
@@ -184,22 +181,19 @@ class KeyguardHelper {
 			}
 		}
 
-		let promise = null;
 		if (obj.redirect) {
-			promise = this.wrappedClient.signMessage(obj, obj.redirect)
+			this.wrappedClient.signMessage(obj, obj.redirect);
 		} else {
-			promise = this.wrappedClient.signMessage(obj)
+			this.wrappedClient.signMessage(obj).then((signed) => {
+				callback(signed);
+			}).catch((err) => {
+				if (options.onError) {
+					options.onError(err);
+				} else {
+					this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", err);
+				}
+			});
 		}
-
-		promise.then((signed) => {
-			callback(signed);
-		}).catch((err) => {
-			if (options.onError) {
-				options.onError(err);
-			} else {
-				this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", err);
-			}
-		});
 	}
 
 	requestTransaction(callback, options = { }) {
@@ -263,22 +257,19 @@ class KeyguardHelper {
 			}
 		}
 
-		let promise = null;
 		if (obj.redirect) {
-			promise = this.wrappedClient.checkout(obj, obj.redirect)
+			this.wrappedClient.checkout(obj, obj.redirect);
 		} else {
-			promise = this.wrappedClient.checkout(obj)
+			this.wrappedClient.checkout(obj).then((result) => {
+				callback(result);
+			}).catch((err) => {
+				if (options.onError) {
+					options.onError(err);
+				} else {
+					this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", err);
+				}
+			});
 		}
-
-		promise.then((result) => {
-			callback(result);
-		}).catch((err) => {
-			if (options.onError) {
-				options.onError(err);
-			} else {
-				this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", err);
-			}
-		});
 	}
 }
 

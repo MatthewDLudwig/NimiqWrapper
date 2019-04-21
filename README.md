@@ -246,10 +246,14 @@ These functions can be accessed through the `keyguardHelper` property of the con
 	    - The callback to call if the keyguard request was completed successfully.  The callback should take two parameters:
 		  - `result` which contains the same data that would have been returned to the callback passed to the `requestXXXXX` functions.
 		  - `data` which contains the data passed to the keyguard with `redirectBehavior.data` so you can maintain state in between redirects.
+		    - Whether or not you provide the keyguard data to pass along, this parameter will always have a value.
+			- This parameter will always have a `__command` property which informs the programmer which command the redirect response was generated from.
   	  - `onSuccess`
   	    - The callback to call if the keyguard request wasn't completed correctly.  The callback should take two parameters:
   		  - `error` which contains the thrown error.
   		  - `data` which contains the data passed to the keyguard with `redirectBehavior.data` so you can maintain state in between redirects.
+		    - Whether or not you provide the keyguard data to pass along, this parameter will always have a value.
+			- This parameter will always have a `__command` property which informs the programmer which command the redirect response was generated from.
 		- This parameter is optional and if not included the Global NimiqWrapper Error Callback will be used.
   - `requestAddress`
     - This function requests that the user pick one of their accounts and then that account's address and label are sent to the callback function.
