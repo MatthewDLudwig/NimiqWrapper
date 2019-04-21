@@ -47,7 +47,11 @@ class MinerHelper {
 		}
 
 		if (this.minerOptions.pool) {
-			this.wrappedMiner = new Nimiq.SmartPoolMiner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.accounts, this.theWrapper.wrappedNode.mempool, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, Nimiq.BasePoolMiner.generateDeviceId(this.theWrapper.wrappedNode.network.config), this.minerOptions.data);
+			if (this.theWrapper.nodeType == "NANO") {
+				this.wrappedMiner = new Nimiq.NanoPoolMiner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, Nimiq.BasePoolMiner.generateDeviceId(this.theWrapper.wrappedNode.network.config), this.minerOptions.data);
+			} else {
+				this.wrappedMiner = new Nimiq.SmartPoolMiner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.accounts, this.theWrapper.wrappedNode.mempool, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, Nimiq.BasePoolMiner.generateDeviceId(this.theWrapper.wrappedNode.network.config), this.minerOptions.data);
+			}
 		} else {
 			this.wrappedMiner = new Nimiq.Miner(this.theWrapper.wrappedNode.blockchain, this.theWrapper.wrappedNode.accounts, this.theWrapper.wrappedNode.mempool, this.theWrapper.wrappedNode.network.time, this.minerOptions.addr, this.minerOptions.data);
 
