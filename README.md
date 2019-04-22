@@ -452,6 +452,8 @@ These functions can be accessed through the `minerHelper` property of the constr
     - This function will return an estimation of the amount of NIM earned per hour based off the current hashrate of the miner.
       - NIM earned isn't immediately payed out to the specified address as the actual pool handles payouts
 - Getters
+  - `isMining`
+    - Returns `true` if the miner is mining (the state it'd be in after `startMining`) and `false` if not (the state it'd be in after `stopMining`).
   - `hashrate`
     - Return the current hashrate of the miner.
   - `poolBalance` / `payoutBalance`
@@ -473,6 +475,13 @@ These functions can be accessed through the `minerHelper` property of the constr
 These functions can be accessed through the `accountHelper` property of the constructed `NimiqWrapper` object.
 
 - Functions
+  - `isValidFriendlyAddress`
+    - Returns `true` if the given parameter can be parsed by `Nimiq.Address.fromUserFriendlyAddress`, and `false` if not.
+	  - This function is useful for validating data the user inputs.
+    - Parameters
+      - `addr`
+        - The object to check whether it contains a friendly address or not.
+        - Can be anything, but should only return `true` for strings with the user friendly representation of an address.
   - `getFriendlyAddress`
     - Returns a string containing the user friendly representation of an address.
     - Parameters

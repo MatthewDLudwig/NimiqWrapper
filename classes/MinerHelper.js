@@ -110,6 +110,10 @@ class MinerHelper {
 		return perBlock * (60 / 1); //1 block per minute, 60 minutes in an hour.
 	}
 
+	get isMining() {
+		return this.wrappedMiner.working;
+	}
+
 	get hashrate() {
 		return this.wrappedMiner.hashrate;
 	}

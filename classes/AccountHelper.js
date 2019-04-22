@@ -10,6 +10,15 @@ class AccountHelper {
 		this.theWrapper = wrapper;
 	}
 
+	isValidFriendlyAddress(addr) {
+		try {
+			Nimiq.Address.fromUserFriendlyAddress(addr)
+			return true;
+		} catch (e) { }
+
+		return false;
+	}
+
 	getFriendlyAddress(obj) {
 		if (obj instanceof Nimiq.Wallet) {
 			return obj.address.toUserFriendlyAddress();

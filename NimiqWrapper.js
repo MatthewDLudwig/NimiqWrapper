@@ -383,6 +383,10 @@ class MinerHelper {
 		return perBlock * (60 / 1); //1 block per minute, 60 minutes in an hour.
 	}
 
+	get isMining() {
+		return this.wrappedMiner.working;
+	}
+
 	get hashrate() {
 		return this.wrappedMiner.hashrate;
 	}
@@ -420,6 +424,15 @@ class AccountHelper {
 
 	constructor(wrapper) {
 		this.theWrapper = wrapper;
+	}
+
+	isValidFriendlyAddress(addr) {
+		try {
+			Nimiq.Address.fromUserFriendlyAddress(addr)
+			return true;
+		} catch (e) { }
+
+		return false;
 	}
 
 	getFriendlyAddress(obj) {
