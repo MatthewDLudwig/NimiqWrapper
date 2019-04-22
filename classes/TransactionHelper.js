@@ -44,7 +44,7 @@ class TransactionHelper {
 			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsTo", "Parameter type incompatible with function.");
 		} else {
 			if (this.theWrapper.nodeType == "NANO") {
-				nimiq.consenus.addSubscriptions(watchAddr);
+				this.theWrapper.wrappedNode.consenus.addSubscriptions(watchAddr);
 			}
 
 			let trackID = this.theWrapper.wrappedNode.mempool.on("transaction-added", (tx) => {
@@ -77,7 +77,7 @@ class TransactionHelper {
 			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsFrom", "Parameter type incompatible with function.");
 		} else {
 			if (this.theWrapper.nodeType == "NANO") {
-				nimiq.consenus.addSubscriptions(watchAddr);
+				this.theWrapper.wrappedNode.consenus.addSubscriptions(watchAddr);
 			}
 
 			let trackID = this.theWrapper.wrappedNode.mempool.on("transaction-added", (tx) => {
@@ -110,7 +110,7 @@ class TransactionHelper {
 			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsTo", "Parameter type incompatible with function.");
 		} else {
 			if (this.theWrapper.nodeType == "NANO") {
-				nimiq.consenus.addSubscriptions(watchAddr);
+				this.theWrapper.wrappedNode.consenus.addSubscriptions(watchAddr);
 			}
 
 			let trackID = this.theWrapper.wrappedNode.mempool.on("transaction-added", (tx) => {
