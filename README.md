@@ -36,7 +36,6 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
 
 ### In Browser
 - Include necessary scripts
-<script src="https://synth.drawpad.org/res/sites/nimiq/publish/res/NimiqWrapper.js"> </script>
   - Nimiq Library
     - https://cdn.nimiq.com/nimiq.js
   - Keyguard Library
