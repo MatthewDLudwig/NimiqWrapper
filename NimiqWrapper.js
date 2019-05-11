@@ -79,12 +79,12 @@ class KeyguardHelper {
 
 	requestAddress(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", "Keyguard cannot be used in NodeJS!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", "Keyguard not yet initialized!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -133,12 +133,12 @@ class KeyguardHelper {
 
 	requestSignature(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", "Keyguard cannot be used in NodeJS!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", "Keyguard not yet initialized!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -198,12 +198,12 @@ class KeyguardHelper {
 
 	requestTransaction(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", "Keyguard cannot be used in NodeJS!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", "Keyguard not yet initialized!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -238,6 +238,7 @@ class KeyguardHelper {
 		}
 		if (options.logoURL) obj.shopLogoUrl = options.logoURL;
 		if (options.sendFrom) obj.sender = options.sendFrom;
+		if (options.forceFrom) obj.forceSender = options.forceFrom;
 		if (options.address) obj.recipient = options.address;
 		if (options.addrType) obj.recipientType = options.addrType;
 		if (options.amount) obj.value = options.amount;
@@ -304,7 +305,7 @@ class MinerHelper {
 			} else if (options.extraData instanceof Uint8Array) {
 				this.minerOptions.data = options.extraData;
 			} else {
-				this.theWrapper.callbacks.error("MinerHelper:initMiner", "Invalid type for extraData option, using none.");
+				this.theWrapper.callbacks.error("MinerHelper:initMiner", NimiqWrapper.ERROR_MESSAGES.BAD_DATA);
 			}
 		}
 		if (options.address) {
@@ -315,7 +316,7 @@ class MinerHelper {
 			} else if (typeof options.address == "string") {
 				this.minerOptions.addr = Nimiq.Address.fromUserFriendlyAddress(options.address);
 			} else {
-				this.theWrapper.callbacks.error("MinerHelper:initMiner", "Invalid type for address option, using Nimiq Burn Address.");
+				this.theWrapper.callbacks.error("MinerHelper:initMiner", NimiqWrapper.ERROR_MESSAGES.BAD_ADDRESS);
 			}
 		}
 
@@ -343,7 +344,7 @@ class MinerHelper {
 				} else if (state == Nimiq.BasePoolMiner.ConnectionState.CLOSED) {
 					this.theWrapper.callbacks.connectionState("disconnected");
 				} else {
-					this.theWrapper.callbacks.error("MinerHelper:initMiner", "Unknown connection state occurred!");
+					this.theWrapper.callbacks.error("MinerHelper:initMiner", NimiqWrapper.ERROR_MESSAGES.UNKNOWN_STATE);
 				}
 			});
 
@@ -353,7 +354,7 @@ class MinerHelper {
 
 	startMining() {
 		if (!this.wrappedMiner) {
-			this.theWrapper.callbacks.error("MinerHelper:startMining", "Miner not yet initialized!");
+			this.theWrapper.callbacks.error("MinerHelper:startMining", NimiqWrapper.ERROR_MESSAGES.NO_MINER_YET);
 			return;
 		}
 
@@ -362,7 +363,7 @@ class MinerHelper {
 
 	stopMining() {
 		if (!this.wrappedMiner) {
-			this.theWrapper.callbacks.error("MinerHelper:stopMining", "Miner not yet initialized!");
+			this.theWrapper.callbacks.error("MinerHelper:stopMining", NimiqWrapper.ERROR_MESSAGES.NO_MINER_YET);
 			return;
 		}
 
@@ -371,7 +372,7 @@ class MinerHelper {
 
 	estimateRewardPerHour() {
 		if (!this.wrappedMiner) {
-			this.theWrapper.callbacks.error("MinerHelper:estimateRewardPerHour", "Miner not yet initialized!");
+			this.theWrapper.callbacks.error("MinerHelper:estimateRewardPerHour", NimiqWrapper.ERROR_MESSAGES.NO_MINER_YET);
 			return;
 		}
 
@@ -441,7 +442,7 @@ class AccountHelper {
 		} else if (obj instanceof Nimiq.Address) {
 			return obj.toUserFriendlyAddress();
 		} else {
-			this.theWrapper.callbacks.error("AccountHelper:getFriendlyAddress", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("AccountHelper:getFriendlyAddress", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		}
 	}
 
@@ -467,7 +468,7 @@ class AccountHelper {
 				});
 			}
 		} else {
-			this.theWrapper.callbacks.error("AccountHelper:getBalance", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("AccountHelper:getBalance", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		}
 	}
 
@@ -491,7 +492,7 @@ class AccountHelper {
 		}
 
 		if (mnemonic == null) {
-			this.theWrapper.callbacks.error("AccountHelper:importWalletFromMnemonic", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("AccountHelper:importWalletFromMnemonic", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			let entropy = null;
 			if (Nimiq.MnemonicUtils.getMnemonicType(mnemonic) == Nimiq.MnemonicUtils.MnemonicType.LEGACY) {
@@ -569,7 +570,7 @@ class TransactionHelper {
 		}
 
 		if (watchAddr == null) {
-			this.theWrapper.callbacks.error("TransactionHelper:getRemainingFreeTransactionsFor", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("TransactionHelper:getRemainingFreeTransactionsFor", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 			return 0;
 		} else {
 			return Math.max(0, 10 - this.theWrapper.wrappedNode.mempool.getTransactionsBySender(watchAddr).filter((tx) => {
@@ -589,7 +590,7 @@ class TransactionHelper {
 		}
 
 		if (watchAddr == null) {
-			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsTo", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsTo", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			if (this.theWrapper.nodeType == "NANO") {
 				this.theWrapper.wrappedNode.consensus.addSubscriptions(watchAddr);
@@ -622,7 +623,7 @@ class TransactionHelper {
 		}
 
 		if (watchAddr == null) {
-			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsFrom", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsFrom", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			if (this.theWrapper.nodeType == "NANO") {
 				this.theWrapper.wrappedNode.consensus.addSubscriptions(watchAddr);
@@ -655,7 +656,7 @@ class TransactionHelper {
 		}
 
 		if (watchAddr == null) {
-			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsTo", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsTo", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			if (this.theWrapper.nodeType == "NANO") {
 				this.theWrapper.wrappedNode.consensus.addSubscriptions(watchAddr);
@@ -701,12 +702,12 @@ class TransactionHelper {
 		if (options.fee) {
 			if (options.fee > 0) {
 				if (options.fee < 138) {
-					this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", "Fee must either be 0 or greater than 138 Luna.  Less than 138 Luna is treated as feeless.");
+					this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", NimiqWrapper.ERROR_MESSAGES.BAD_FEE);
 				} else {
 					txDetails.fee = options.fee;
 				}
 			} else {
-				this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", "Negative fee not allowed, sending transaction without a fee.");
+				this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", NimiqWrapper.ERROR_MESSAGES.BAD_FEE);
 			}
 		}
 
@@ -721,7 +722,7 @@ class TransactionHelper {
 		}
 
 		if (txDetails.fee == 0 && this.getRemainingFreeTransactionsFor(txDetails.sender) == 0) {
-			this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", "Can only have 10 feeless transactions in the mempool per sender, try again later or add a fee.");
+			this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", NimiqWrapper.ERROR_MESSAGES.FREE_TX_LIMIT);
 		} else {
 			let tx = null;
 			if (txDetails.extraData) {
@@ -797,8 +798,15 @@ class SignatureHelper {
 		return Nimiq.Signature.create(obj.private, obj.public, obj.data);
 	}
 
-	verifyKeyguardSignature(signedMessage) {
-		return this.verifyRawSignature(signedMessage.signature, signedMessage.signerPublicKey, signedMessage.message);
+	verifyKeyguardSignature(signedMessage, rawMessage) {
+		const signature = new Nimiq.Signature(signedMessage.signature);
+		const publicKey = new Nimiq.PublicKey(signedMessage.signerPublicKey);
+
+		const data = AccountsClient.MSG_PREFIX + rawMessage.length + rawMessage;
+		const dataBytes = Nimiq.BufferUtils.fromUtf8(data);
+		const hash = Nimiq.Hash.computeSha256(dataBytes);
+
+		return signature.verify(publicKey, hash);
 	}
 
 	verifyRawSignature(signature, publicKey, message) {
@@ -849,7 +857,7 @@ class UtilHelper {
 			}
 
 			if (finalHash == null) {
-				this.theWrapper.callbacks.error("UtilHelper:getTransactionByHash", "Parameter type incompatible with function.");
+				this.theWrapper.callbacks.error("UtilHelper:getTransactionByHash", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 			} else {
 				this.theWrapper.wrappedNode.blockchain.getTransactionInfoByHash(finalHash).then((tx) => {
 					let obj = {
@@ -879,7 +887,7 @@ class UtilHelper {
 			}
 
 			if (finalHash == null) {
-				this.theWrapper.callbacks.error("UtilHelper:getBlockByHash", "Parameter type incompatible with function.");
+				this.theWrapper.callbacks.error("UtilHelper:getBlockByHash", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 			} else {
 				this.theWrapper.wrappedNode.blockchain.getBlock(finalHash).then((block) => {
 					let obj = {
@@ -929,7 +937,7 @@ class UtilHelper {
 		}
 
 		if (address == null) {
-			this.theWrapper.callbacks.error("UtilHelper:getIqonURLFor", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("UtilHelper:getIqonURLFor", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			if (png) {
 				if (size > 0) {
@@ -954,7 +962,7 @@ class UtilHelper {
 		}
 
 		if (address == null) {
-			this.theWrapper.callbacks.error("UtilHelper:getTransactionRequestURL", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("UtilHelper:getTransactionRequestURL", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			let url = "https://safe.nimiq.com/#/_new-transaction/" + address;
 			url = url + "/recipient/" + amount;
@@ -979,6 +987,23 @@ class UtilHelper {
 }
 
 class NimiqWrapper {
+	static get ERROR_MESSAGES() {
+		return {
+			BAD_PARAM_TYPE : "Parameter type incompatible with function.",
+			ANOTHER_NODE : "Nimiq node is already open in another tab or window with same origin.",
+			NODE_NOT_SUPPORTED : "Browser does not support features required for Nimiq.",
+			UNKNOWN_INIT :  "Uknown error occurred during initialization.",
+			BAD_FEE : "Fee must either be 0 or greater than 138 Luna.  Less than 138 Luna is treated as feeless.",
+			FREE_TX_LIMIT : "Can only have 10 feeless transactions in the mempool per sender, try again later or add a fee.",
+			KEYGUARD_NOT_SUPPORTED : "Keyguard cannot be used in NodeJS!",
+			KEYGUARD_NOT_READY : "Keyguard not yet initialized!",
+			BAD_DATA : "Invalid type for extraData option, using none.",
+			BAD_ADDRESS : "Invalid type for address option, using Nimiq Burn Address.",
+			UNKNOWN_STATE : "Unknown connection state occurred!",
+			NO_MINER_YET : "Miner not yet initialized!"
+		};
+	}
+
 	/*
 		Variables:
 			wrappedNode
@@ -1029,6 +1054,10 @@ class NimiqWrapper {
 			network : "MAIN",
 			type : "LIGHT",
 			debug : false,
+			classes : false,
+			loaded : () => {
+
+			},
 			ready : () => {
 
 			}
@@ -1038,20 +1067,25 @@ class NimiqWrapper {
 		if (options.type) this.nodeOptions.type = options.type.toUpperCase();
 		if (options.debug) this.nodeOptions.debug = options.debug;
 
+		if (options.justClasses) this.nodeOptions.classes = options.justClasses;
+		if (options.whenLoaded) this.nodeOptions.loaded = options.whenLoaded;
 		if (options.whenReady) this.nodeOptions.ready = options.whenReady;
 
 		if (WRAPPING_NODE) {
 			this.innerInit();
 		} else {
 			Nimiq.init(async () => {
-				await this.innerInit();
+				this.nodeOptions.loaded();
+				if (!this.nodeOptions.classes) {
+					await this.innerInit();
+				}
 			}, (error) => {
 				if (error === Nimiq.ERR_WAIT) {
-					this.callbacks.error("NimiqWrapper:initNode", "Nimiq node is already open in another tab or window with same origin.");
+					this.callbacks.error("NimiqWrapper:initNode", NimiqWrapper.ERROR_MESSAGES.ANOTHER_NODE);
 				} else if (error === Nimiq.ERR_UNSUPPORTED) {
-					this.callbacks.error("NimiqWrapper:initNode", "Browser does not support features required for Nimiq.");
+					this.callbacks.error("NimiqWrapper:initNode", NimiqWrapper.ERROR_MESSAGES.NODE_NOT_SUPPORTED);
 				} else {
-					this.callbacks.error("NimiqWrapper:initNode", "Uknown error occurred during initialization.");
+					this.callbacks.error("NimiqWrapper:initNode", NimiqWrapper.ERROR_MESSAGES.UNKNOWN_INIT);
 				}
 			});
 		}
@@ -1112,6 +1146,14 @@ class NimiqWrapper {
 		this.nodeOptions.ready();
 	}
 
+	getSupplyAt(block) {
+		return Nimiq.Policy.supplyAfter(block);
+	}
+
+	getBlockRewardAt(block) {
+		return Nimiq.Policy.blockRewardAt(block);
+	}
+
 	get nodeType() {
 		if (this.wrappedNode.consensus instanceof Nimiq.NanoConsensus) {
 			return "NANO";
@@ -1146,8 +1188,12 @@ class NimiqWrapper {
 		return difficulty * Math.pow(2, 16) / Nimiq.Policy.BLOCK_TIME;
 	}
 
+	get currentSupply() {
+		return getSupplyAt(this.wrappedNode.blockchain.height);
+	}
+
 	get blockReward() {
-		return Nimiq.Policy.blockRewardAt(this.wrappedNode.blockchain.height);
+		return getBlockRewardAt(this.wrappedNode.blockchain.height);
 	}
 
 	get blockHeight() {

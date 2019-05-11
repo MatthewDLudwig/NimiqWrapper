@@ -18,6 +18,7 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
   - [In NodeJS](#in-nodejs)
 - [Basics](#basics)
   - [Initialization](#initialization)
+  - [Dealing With Errors](#dealing-with-errors)
   - [Common NimiqWrapper Patterns](#common-nimiqwrapper-patterns)
 - [The Objects](#the-objects)
   - [NimiqWrapper](#nimiqwrapper)
@@ -39,7 +40,7 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
   - Nimiq Library
     - https://cdn.nimiq.com/nimiq.js
   - Keyguard Library
-    - https://cdn.jsdelivr.net/npm/@nimiq/accounts-client@v0.2/dist/standalone/AccountsClient.standalone.umd.js
+    - https://cdn.jsdelivr.net/npm/@nimiq/accounts-client@v0.3/dist/standalone/AccountsClient.standalone.umd.js
   - NimiqWrapper Library
     - Use `NimiqWrapper.js` in the base directory of this repo.
 	- Or use the individual files in the `classes` directory of this repo, including them in the order specified at the top of the files.
@@ -73,6 +74,43 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
     - The address to mine to, along with the pool's host and port are set with this function.
       - This function **should not** be called again if you want to change these values.
     - This function will not work correctly unless `NimiqWrapper:initNode` has already been called.
+
+### Dealing With Errors
+- Errors can occur under a variety of situations when working with NimiqWrapper.
+- Some of the more common situations are:
+  - When initializing a Nimiq Node.
+  - When using the Keyguard.
+  - When incompatible parameter types have been passed in.
+- All errors will call the error callback that can be set in the NimiqWrapper constructor.
+  - The error callback will take the location of the error and the associated messages as parameters.
+- Catching errors thrown by NimiqWrapper will usually consist of:
+  - Checking the location (possibly splitting by ":") to determine if you care about it.
+  - If you care about the thrown error, check it's error message.
+- The associated messages with each error will be a string, either custom (based on the error) or one of the following constants:
+  - `NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE`
+    - Thrown when a function is given a parameter of incompatible type.
+  - `NimiqWrapper.ERROR_MESSAGES.ANOTHER_NODE`
+    - Thrown when a Nimiq Node on the same domain name is already running.
+  - `NimiqWrapper.ERROR_MESSAGES.NODE_NOT_SUPPORTED`
+    - Thrown when the browser is missing a feature required for Nimiq to initialize.
+  - `NimiqWrapper.ERROR_MESSAGES.UNKNOWN_INIT`
+    - Thrown when an unknown error occurs during initialization.
+  - `NimiqWrapper.ERROR_MESSAGES.BAD_FEE`
+    - Thrown when there's an attempt to send a transaction with a fee less than 138 Luna (including negative fees) which is treated as no fee.
+  - `NimiqWrapper.ERROR_MESSAGES.FREE_TX_LIMIT`
+    - Thrown when the developer attempts to send a transaction without a fee when 10 transactions without a fee from the sending address already exist.
+  - `NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED`
+    - Thrown when the browser is missing a feature required to use the Nimiq Keyguard.
+  - `NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY`
+    - Thrown when a KeyguardHelper function is called before the Keyguard is done initializing.
+  - `NimiqWrapper.ERROR_MESSAGES.BAD_DATA`
+    - Thrown when the developer sends a transaction with an extraData of an incompatible type.  None is used in this case.
+  - `NimiqWrapper.ERROR_MESSAGES.BAD_ADDRESS`
+    - Thrown when the developer sends a transaction with an address of an incompatible type.  The Nimiq Burn address is used in this case (pay attention and always test on Testnet)
+  - `NimiqWrapper.ERROR_MESSAGES.UNKNOWN_STATE`
+    - Thrown when the miner runs into an unknown state, and should never be thrown.
+  - `NimiqWrapper.ERROR_MESSAGES.NO_MINER_YET`
+    - Thrown when a MinerHelper function is called before the Miner is initalized.
 
 ### Common NimiqWrapper Patterns
 - Many functions take an `options` parameter which is optional, but can be ued to change the default option for the function.
@@ -294,7 +332,6 @@ These functions can be accessed through the `keyguardHelper` property of the con
           - signer
           - signerPublicKey
           - signature
-          - message
       - `options`
         - `onError`
           - If this property is defined, the given function will be called instsead of the Global NimiqWrapper Error Callback.
@@ -669,11 +706,13 @@ These functions can be accessed through the `signatureHelper` property of the co
         - The message being signed by the wallet.
         - Can either be a `Uint8Array`, a string, or a JS object (which will be converted to a JSON string).
   - `verifyKeyguardSignature`
-    - This function can be used with the result from `KeyguardHelper:requestSignature` to ensure everything was correct.
-      - This is equivalent to calling `verifyRawSignature` with the Keyguard signature's `signature`, `signerPublicKey`, and `message` properties.
+    - This function can be used with a result from `KeyguardHelper:requestSignature` and the message that was supposedly signed to verify whether the signature is valid for that message.
     - Parameters
       - `signedMessage`
         - An object returned by the keyguard after signing a message, or an object with the same properties.
+	  - `rawMessage`
+	    - The originally signed message.
+		- The additions to the data made by the Keyguard when signing are done for you automatically so you can use your message as it was specified in `KeyguardHelper:requestSignature`.
   - `verifyRawSignature`
     - This function can be used to verify that a signature represents the given message and was signed by the given public key (different from the user friendly address).
     - Parameters

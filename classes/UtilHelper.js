@@ -28,7 +28,7 @@ class UtilHelper {
 			}
 
 			if (finalHash == null) {
-				this.theWrapper.callbacks.error("UtilHelper:getTransactionByHash", "Parameter type incompatible with function.");
+				this.theWrapper.callbacks.error("UtilHelper:getTransactionByHash", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 			} else {
 				this.theWrapper.wrappedNode.blockchain.getTransactionInfoByHash(finalHash).then((tx) => {
 					let obj = {
@@ -58,7 +58,7 @@ class UtilHelper {
 			}
 
 			if (finalHash == null) {
-				this.theWrapper.callbacks.error("UtilHelper:getBlockByHash", "Parameter type incompatible with function.");
+				this.theWrapper.callbacks.error("UtilHelper:getBlockByHash", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 			} else {
 				this.theWrapper.wrappedNode.blockchain.getBlock(finalHash).then((block) => {
 					let obj = {
@@ -108,7 +108,7 @@ class UtilHelper {
 		}
 
 		if (address == null) {
-			this.theWrapper.callbacks.error("UtilHelper:getIqonURLFor", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("UtilHelper:getIqonURLFor", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			if (png) {
 				if (size > 0) {
@@ -133,7 +133,7 @@ class UtilHelper {
 		}
 
 		if (address == null) {
-			this.theWrapper.callbacks.error("UtilHelper:getTransactionRequestURL", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("UtilHelper:getTransactionRequestURL", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			let url = "https://safe.nimiq.com/#/_new-transaction/" + address;
 			url = url + "/recipient/" + amount;

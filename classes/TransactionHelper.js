@@ -21,7 +21,7 @@ class TransactionHelper {
 		}
 
 		if (watchAddr == null) {
-			this.theWrapper.callbacks.error("TransactionHelper:getRemainingFreeTransactionsFor", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("TransactionHelper:getRemainingFreeTransactionsFor", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 			return 0;
 		} else {
 			return Math.max(0, 10 - this.theWrapper.wrappedNode.mempool.getTransactionsBySender(watchAddr).filter((tx) => {
@@ -41,7 +41,7 @@ class TransactionHelper {
 		}
 
 		if (watchAddr == null) {
-			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsTo", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsTo", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			if (this.theWrapper.nodeType == "NANO") {
 				this.theWrapper.wrappedNode.consensus.addSubscriptions(watchAddr);
@@ -74,7 +74,7 @@ class TransactionHelper {
 		}
 
 		if (watchAddr == null) {
-			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsFrom", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsFrom", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			if (this.theWrapper.nodeType == "NANO") {
 				this.theWrapper.wrappedNode.consensus.addSubscriptions(watchAddr);
@@ -107,7 +107,7 @@ class TransactionHelper {
 		}
 
 		if (watchAddr == null) {
-			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsTo", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("TransactionHelper:watchForTransactionsTo", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			if (this.theWrapper.nodeType == "NANO") {
 				this.theWrapper.wrappedNode.consensus.addSubscriptions(watchAddr);
@@ -153,12 +153,12 @@ class TransactionHelper {
 		if (options.fee) {
 			if (options.fee > 0) {
 				if (options.fee < 138) {
-					this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", "Fee must either be 0 or greater than 138 Luna.  Less than 138 Luna is treated as feeless.");
+					this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", NimiqWrapper.ERROR_MESSAGES.BAD_FEE);
 				} else {
 					txDetails.fee = options.fee;
 				}
 			} else {
-				this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", "Negative fee not allowed, sending transaction without a fee.");
+				this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", NimiqWrapper.ERROR_MESSAGES.BAD_FEE);
 			}
 		}
 
@@ -173,7 +173,7 @@ class TransactionHelper {
 		}
 
 		if (txDetails.fee == 0 && this.getRemainingFreeTransactionsFor(txDetails.sender) == 0) {
-			this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", "Can only have 10 feeless transactions in the mempool per sender, try again later or add a fee.");
+			this.theWrapper.callbacks.error("TransactionHelper:sendTransaction", NimiqWrapper.ERROR_MESSAGES.FREE_TX_LIMIT);
 		} else {
 			let tx = null;
 			if (txDetails.extraData) {

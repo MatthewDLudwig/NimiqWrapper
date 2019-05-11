@@ -28,8 +28,15 @@ class SignatureHelper {
 		return Nimiq.Signature.create(obj.private, obj.public, obj.data);
 	}
 
-	verifyKeyguardSignature(signedMessage) {
-		return this.verifyRawSignature(signedMessage.signature, signedMessage.signerPublicKey, signedMessage.message);
+	verifyKeyguardSignature(signedMessage, rawMessage) {
+		const signature = new Nimiq.Signature(signedMessage.signature);
+		const publicKey = new Nimiq.PublicKey(signedMessage.signerPublicKey);
+
+		const data = AccountsClient.MSG_PREFIX + rawMessage.length + rawMessage;
+		const dataBytes = Nimiq.BufferUtils.fromUtf8(data);
+		const hash = Nimiq.Hash.computeSha256(dataBytes);
+
+		return signature.verify(publicKey, hash);
 	}
 
 	verifyRawSignature(signature, publicKey, message) {

@@ -31,7 +31,7 @@ class MinerHelper {
 			} else if (options.extraData instanceof Uint8Array) {
 				this.minerOptions.data = options.extraData;
 			} else {
-				this.theWrapper.callbacks.error("MinerHelper:initMiner", "Invalid type for extraData option, using none.");
+				this.theWrapper.callbacks.error("MinerHelper:initMiner", NimiqWrapper.ERROR_MESSAGES.BAD_DATA);
 			}
 		}
 		if (options.address) {
@@ -42,7 +42,7 @@ class MinerHelper {
 			} else if (typeof options.address == "string") {
 				this.minerOptions.addr = Nimiq.Address.fromUserFriendlyAddress(options.address);
 			} else {
-				this.theWrapper.callbacks.error("MinerHelper:initMiner", "Invalid type for address option, using Nimiq Burn Address.");
+				this.theWrapper.callbacks.error("MinerHelper:initMiner", NimiqWrapper.ERROR_MESSAGES.BAD_ADDRESS);
 			}
 		}
 
@@ -70,7 +70,7 @@ class MinerHelper {
 				} else if (state == Nimiq.BasePoolMiner.ConnectionState.CLOSED) {
 					this.theWrapper.callbacks.connectionState("disconnected");
 				} else {
-					this.theWrapper.callbacks.error("MinerHelper:initMiner", "Unknown connection state occurred!");
+					this.theWrapper.callbacks.error("MinerHelper:initMiner", NimiqWrapper.ERROR_MESSAGES.UNKNOWN_STATE);
 				}
 			});
 
@@ -80,7 +80,7 @@ class MinerHelper {
 
 	startMining() {
 		if (!this.wrappedMiner) {
-			this.theWrapper.callbacks.error("MinerHelper:startMining", "Miner not yet initialized!");
+			this.theWrapper.callbacks.error("MinerHelper:startMining", NimiqWrapper.ERROR_MESSAGES.NO_MINER_YET);
 			return;
 		}
 
@@ -89,7 +89,7 @@ class MinerHelper {
 
 	stopMining() {
 		if (!this.wrappedMiner) {
-			this.theWrapper.callbacks.error("MinerHelper:stopMining", "Miner not yet initialized!");
+			this.theWrapper.callbacks.error("MinerHelper:stopMining", NimiqWrapper.ERROR_MESSAGES.NO_MINER_YET);
 			return;
 		}
 
@@ -98,7 +98,7 @@ class MinerHelper {
 
 	estimateRewardPerHour() {
 		if (!this.wrappedMiner) {
-			this.theWrapper.callbacks.error("MinerHelper:estimateRewardPerHour", "Miner not yet initialized!");
+			this.theWrapper.callbacks.error("MinerHelper:estimateRewardPerHour", NimiqWrapper.ERROR_MESSAGES.NO_MINER_YET);
 			return;
 		}
 

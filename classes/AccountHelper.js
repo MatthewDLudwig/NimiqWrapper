@@ -25,7 +25,7 @@ class AccountHelper {
 		} else if (obj instanceof Nimiq.Address) {
 			return obj.toUserFriendlyAddress();
 		} else {
-			this.theWrapper.callbacks.error("AccountHelper:getFriendlyAddress", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("AccountHelper:getFriendlyAddress", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		}
 	}
 
@@ -51,7 +51,7 @@ class AccountHelper {
 				});
 			}
 		} else {
-			this.theWrapper.callbacks.error("AccountHelper:getBalance", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("AccountHelper:getBalance", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		}
 	}
 
@@ -75,7 +75,7 @@ class AccountHelper {
 		}
 
 		if (mnemonic == null) {
-			this.theWrapper.callbacks.error("AccountHelper:importWalletFromMnemonic", "Parameter type incompatible with function.");
+			this.theWrapper.callbacks.error("AccountHelper:importWalletFromMnemonic", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		} else {
 			let entropy = null;
 			if (Nimiq.MnemonicUtils.getMnemonicType(mnemonic) == Nimiq.MnemonicUtils.MnemonicType.LEGACY) {

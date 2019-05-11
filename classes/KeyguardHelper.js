@@ -73,12 +73,12 @@ class KeyguardHelper {
 
 	requestAddress(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", "Keyguard cannot be used in NodeJS!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", "Keyguard not yet initialized!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -127,12 +127,12 @@ class KeyguardHelper {
 
 	requestSignature(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", "Keyguard cannot be used in NodeJS!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", "Keyguard not yet initialized!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -192,12 +192,12 @@ class KeyguardHelper {
 
 	requestTransaction(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", "Keyguard cannot be used in NodeJS!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", "Keyguard not yet initialized!");
+			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -232,6 +232,7 @@ class KeyguardHelper {
 		}
 		if (options.logoURL) obj.shopLogoUrl = options.logoURL;
 		if (options.sendFrom) obj.sender = options.sendFrom;
+		if (options.forceFrom) obj.forceSender = options.forceFrom;
 		if (options.address) obj.recipient = options.address;
 		if (options.addrType) obj.recipientType = options.addrType;
 		if (options.amount) obj.value = options.amount;
