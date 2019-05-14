@@ -214,10 +214,18 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
           - The default value is `false` and `window.nimiq` will be `undefined`.
             - `window.Nimiq` is different from `window.nimiq`
           - Boolean
+        - `justClasses`
+          - If true, a node won't be initialized and the initialization will stop after downloading the remaining `Nimiq.___` classes.
+          - By default it's false.
+          - Function
+        - `whenLoaded`
+          - If included, this callback will be ran once the `Nimiq.___` classes have been loaded but prior to initializing the node.
+          - By default an empty callback will be used.
+          - Function
         - `whenReady`
           - If included, this callback will be ran once `NimiqWrapper:nodeReady` would return true.
             - This is useful if you'd rather not have to check `nodeReady` to be sure the node is initialized.
-            - This is also useful if there's an action you want to only do once when the node is initalized.
+            - This is also useful if there's an action you want to only do once when the node is initialized.
           - By default an empty callback will be used.
           - Function
 - Getters
@@ -229,7 +237,7 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
     - Ensure that this getter returns true before you do most anything with the `NimiqWrapper` object.
       - KeyguardHelper functions are one of the few exceptions where `nodeReady` doesn't have to be `true`.
   - `keyguardReady`
-    - This getter function returns whether the KeyguardHelper initialization function has been called.rue`.
+    - This getter function returns whether the KeyguardHelper initialization function has been called.
   - `minerReady`
     - This getter function returns whether the MinerHelper initialization function has been called.
   - `peerCount`
@@ -409,6 +417,10 @@ These functions can be accessed through the `keyguardHelper` property of the con
 			- This function is most often used after requesting the user choose an address with `requestAddress`.
           - NULL (meaning that the user will be prompted to choose which of their accounts they want to send from)
           - String
+        - `forceFrom`
+          - If true, an error will be thrown if the account specified in `sendFrom` can't complete the transaction.
+          - `false`
+          - Boolean
         - `address`
           - The address the transaction is being sent to, in the friendly format.
           - Nimiq Burn Address (meaning that sent NIM will be forever lost by default)
