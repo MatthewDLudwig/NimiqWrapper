@@ -32,7 +32,7 @@ class SignatureHelper {
 		const signature = new Nimiq.Signature(signedMessage.signature);
 		const publicKey = new Nimiq.PublicKey(signedMessage.signerPublicKey);
 
-		const data = AccountsClient.MSG_PREFIX + rawMessage.length + rawMessage;
+		const data = HubApi.MSG_PREFIX + rawMessage.length + rawMessage;
 		const dataBytes = Nimiq.BufferUtils.fromUtf8(data);
 		const hash = Nimiq.Hash.computeSha256(dataBytes);
 

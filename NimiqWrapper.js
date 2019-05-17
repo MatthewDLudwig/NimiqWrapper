@@ -20,7 +20,7 @@ class KeyguardHelper {
 		this.wrappedClient = null;
 	  	this.keyguardOptions = {
 			name : "Nimiq Application",
-			url : "https://accounts.nimiq-testnet.com",
+			url : "https://hub.nimiq-testnet.com",
 			redirect : null
 		};
 
@@ -55,9 +55,9 @@ class KeyguardHelper {
 				this.keyguardOptions.redirect = null;
 			} else {
 				if (behavior.data) {
-					this.keyguardOptions.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url, behavior.data);
+					this.keyguardOptions.redirect = new HubApi.RedirectRequestBehavior(behavior.url, behavior.data);
 				} else {
-					this.keyguardOptions.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url);
+					this.keyguardOptions.redirect = new HubApi.RedirectRequestBehavior(behavior.url);
 				}
 			}
 		}
@@ -65,10 +65,10 @@ class KeyguardHelper {
 
 		let onSuccess = (r, d) => this.redirectSuccess(r, d);
 		let onError = (e, d) => this.redirectError(e, d);
-		this.wrappedClient = new AccountsClient(this.keyguardOptions.url);
-		this.wrappedClient.on(AccountsClient.RequestType.CHOOSE_ADDRESS, onSuccess, onError);
-		this.wrappedClient.on(AccountsClient.RequestType.SIGN_MESSAGE, onSuccess, onError);
-		this.wrappedClient.on(AccountsClient.RequestType.CHECKOUT, onSuccess, onError);
+		this.wrappedClient = new HubApi(this.keyguardOptions.url);
+		this.wrappedClient.on(HubApi.RequestType.CHOOSE_ADDRESS, onSuccess, onError);
+		this.wrappedClient.on(HubApi.RequestType.SIGN_MESSAGE, onSuccess, onError);
+		this.wrappedClient.on(HubApi.RequestType.CHECKOUT, onSuccess, onError);
 	}
 
 	getRedirectResponse(onSuccess, onError = this.defaultErrorHandler) {
@@ -109,9 +109,9 @@ class KeyguardHelper {
 				obj.redirect = null;
 			} else {
 				if (behavior.data) {
-					obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url, behavior.data);
+					obj.redirect = new HubApi.RedirectRequestBehavior(behavior.url, behavior.data);
 				} else {
-					obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url);
+					obj.redirect = new HubApi.RedirectRequestBehavior(behavior.url);
 				}
 			}
 		}
@@ -164,9 +164,9 @@ class KeyguardHelper {
 				obj.redirect = null;
 			} else {
 				if (behavior.data) {
-					obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url, behavior.data);
+					obj.redirect = new HubApi.RedirectRequestBehavior(behavior.url, behavior.data);
 				} else {
-					obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url);
+					obj.redirect = new HubApi.RedirectRequestBehavior(behavior.url);
 				}
 			}
 		}
@@ -230,9 +230,9 @@ class KeyguardHelper {
 				obj.redirect = null;
 			} else {
 				if (behavior.data) {
-					obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url, behavior.data);
+					obj.redirect = new HubApi.RedirectRequestBehavior(behavior.url, behavior.data);
 				} else {
-					obj.redirect = new AccountsClient.RedirectRequestBehavior(behavior.url);
+					obj.redirect = new HubApi.RedirectRequestBehavior(behavior.url);
 				}
 			}
 		}
@@ -802,7 +802,7 @@ class SignatureHelper {
 		const signature = new Nimiq.Signature(signedMessage.signature);
 		const publicKey = new Nimiq.PublicKey(signedMessage.signerPublicKey);
 
-		const data = AccountsClient.MSG_PREFIX + rawMessage.length + rawMessage;
+		const data = HubApi.MSG_PREFIX + rawMessage.length + rawMessage;
 		const dataBytes = Nimiq.BufferUtils.fromUtf8(data);
 		const hash = Nimiq.Hash.computeSha256(dataBytes);
 

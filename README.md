@@ -40,7 +40,9 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
   - Nimiq Library
     - https://cdn.nimiq.com/nimiq.js
   - Keyguard Library
-    - https://cdn.jsdelivr.net/npm/@nimiq/accounts-client@v0.3/dist/standalone/AccountsClient.standalone.umd.js
+    - https://unpkg.com/@nimiq/hub-api@v0.4/dist/standalone/HubApi.standalone.umd.js
+	- or
+	- https://cdn.jsdelivr.net/npm/@nimiq/hub-api@v0.4/dist/standalone/HubApi.standalone.umd.js
   - NimiqWrapper Library
     - Use `NimiqWrapper.js` in the base directory of this repo.
 	- Or use the individual files in the `classes` directory of this repo, including them in the order specified at the top of the files.
