@@ -441,6 +441,8 @@ class AccountHelper {
 			return obj.address.toUserFriendlyAddress();
 		} else if (obj instanceof Nimiq.Address) {
 			return obj.toUserFriendlyAddress();
+		} else if (obj instanceof Nimiq.PublicKey) {
+			return obj.toAddress().toUserFriendlyAddress();
 		} else {
 			this.theWrapper.callbacks.error("AccountHelper:getFriendlyAddress", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 		}

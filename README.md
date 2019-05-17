@@ -262,7 +262,7 @@ These functions can be accessed through the `keyguardHelper` property of the con
       - `options`
         - `keyguardURL`
 		  - The URL for the accounts manager you wish to connect to.
-		  	- Testnet Keyguard URL: `https://accounts.nimiq-testnet.com`
+		  	- Testnet Keyguard URL: `https://hub.nimiq-testnet.com`
 		  - Default value used if none is provided is the testnet keyguard URL.
 		  - String
 		- `appName`
@@ -537,7 +537,7 @@ These functions can be accessed through the `accountHelper` property of the cons
     - Parameters
       - `obj`
         - The object that the friendly representation should be looked up for.
-        - Must either be a `Nimiq.Wallet` or a `Nimiq.Address`
+        - Type of `obj` must be either `Nimiq.Wallet`, `Nimiq.Address`, or `Nimiq.PublicKey`.
   - `geBalance`
     - This function will retrieve the balance of the given account/address and will call the callback function with the balance.
     - Parameters
