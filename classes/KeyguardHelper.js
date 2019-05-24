@@ -14,7 +14,7 @@ class KeyguardHelper {
 		this.wrappedClient = null;
 	  	this.keyguardOptions = {
 			name : "Nimiq Application",
-			url : "https://hub.nimiq-testnet.com",
+			url : "https://hub.nimiq.com",
 			redirect : null
 		};
 

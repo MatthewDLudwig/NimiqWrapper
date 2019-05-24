@@ -262,7 +262,8 @@ These functions can be accessed through the `keyguardHelper` property of the con
       - `options`
         - `keyguardURL`
 		  - The URL for the accounts manager you wish to connect to.
-		  	- Testnet Keyguard URL: `https://hub.nimiq-testnet.com`
+		  	- Mainnet Keyguard URL: `https://hub.nimiq.com` (the default)
+  		  	- Testnet Keyguard URL: `https://hub.nimiq-testnet.com`
 		  - Default value used if none is provided is the testnet keyguard URL.
 		  - String
 		- `appName`
