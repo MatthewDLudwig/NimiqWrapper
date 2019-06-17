@@ -29,8 +29,8 @@ class SignatureHelper {
 	}
 
 	verifyKeyguardSignature(signedMessage, rawMessage) {
-		const signature = new Nimiq.Signature(signedMessage.signature);
-		const publicKey = new Nimiq.PublicKey(signedMessage.signerPublicKey);
+		const signature = signedMessage.signature instanceof Nimiq.Signature ? signedMessage.signature : new Nimiq.Signature(signedMessage.signature);
+		const publicKey = signedMessage.signerPublicKey instanceof Nimiq.PublicKey ? signedMessage.signerPublicKey : new Nimiq.PublicKey(signedMessage.signerPublicKey);
 
 		const data = HubApi.MSG_PREFIX + rawMessage.length + rawMessage;
 		const dataBytes = Nimiq.BufferUtils.fromUtf8(data);

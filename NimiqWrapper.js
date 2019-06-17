@@ -6,7 +6,7 @@ if (WRAPPING_NODE) {
 	console.log("Wrapping Nimiq in JS!");
 }
 
-class KeyguardHelper {
+class HubHelper {
 	/*
 		Variables:
 			theWrapper
@@ -26,7 +26,7 @@ class KeyguardHelper {
 
 		this.redirectSuccessHandler = (r, d) => { };
 		this.redirectErrorHandler = (e, d) => { };
-		this.defaultErrorHandler = (e, d) => { this.theWrapper.callbacks.error("KeyguardHelper:getRedirectResponse", e); };
+		this.defaultErrorHandler = (e, d) => { this.theWrapper.callbacks.error("HubHelper:getRedirectResponse", e); };
 	}
 
 	redirectSuccess(result, data) {
@@ -79,12 +79,12 @@ class KeyguardHelper {
 
 	requestAddress(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
+			this.theWrapper.callbacks.error("HubHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
+			this.theWrapper.callbacks.error("HubHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -125,7 +125,7 @@ class KeyguardHelper {
 				if (options.onError) {
 					options.onError(err);
 				} else {
-					this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", err);
+					this.theWrapper.callbacks.error("HubHelper:requestAddress", err);
 				}
 			});
 		}
@@ -133,12 +133,12 @@ class KeyguardHelper {
 
 	requestSignature(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
+			this.theWrapper.callbacks.error("HubHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
+			this.theWrapper.callbacks.error("HubHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -190,7 +190,7 @@ class KeyguardHelper {
 				if (options.onError) {
 					options.onError(err);
 				} else {
-					this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", err);
+					this.theWrapper.callbacks.error("HubHelper:requestSignature", err);
 				}
 			});
 		}
@@ -198,12 +198,12 @@ class KeyguardHelper {
 
 	requestTransaction(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
+			this.theWrapper.callbacks.error("HubHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
+			this.theWrapper.callbacks.error("HubHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -267,7 +267,7 @@ class KeyguardHelper {
 				if (options.onError) {
 					options.onError(err);
 				} else {
-					this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", err);
+					this.theWrapper.callbacks.error("HubHelper:requestTransaction", err);
 				}
 			});
 		}
@@ -528,9 +528,7 @@ class AccountHelper {
 		return Nimiq.BufferUtils.toHex(wallet._keyPair.privateKey.serialize());
 	}
 
-	// Will be changed to default to false once legacy wallets are actually legacy in the mainnet.
-	// Currently they're only legacy on the testnet.
-	exportWalletToMnemonic(wallet, legacy = true) {
+	exportWalletToMnemonic(wallet, legacy = false) {
 		let privateKey = wallet._keyPair.privateKey;
 
 		if (legacy) {
@@ -801,8 +799,8 @@ class SignatureHelper {
 	}
 
 	verifyKeyguardSignature(signedMessage, rawMessage) {
-		const signature = new Nimiq.Signature(signedMessage.signature);
-		const publicKey = new Nimiq.PublicKey(signedMessage.signerPublicKey);
+		const signature = signedMessage.signature instanceof Nimiq.Signature ? signedMessage.signature : new Nimiq.Signature(signedMessage.signature);
+		const publicKey = signedMessage.signerPublicKey instanceof Nimiq.PublicKey ? signedMessage.signerPublicKey : new Nimiq.PublicKey(signedMessage.signerPublicKey);
 
 		const data = HubApi.MSG_PREFIX + rawMessage.length + rawMessage;
 		const dataBytes = Nimiq.BufferUtils.fromUtf8(data);
@@ -1011,7 +1009,7 @@ class NimiqWrapper {
 			wrappedNode
 			callbacks
 			nodeOptions
-			keyguardHelper
+			hubHelper
 			minerHelper
 			accountHelper
 			transactionHelper
@@ -1043,12 +1041,17 @@ class NimiqWrapper {
 		if (options.minerChangedCallback) this.callbacks.minerChanged = options.minerChangedCallback;
 		if (options.connectionStateCallback) this.callbacks.connectionState = options.connectionStateCallback;
 
-		this.keyguardHelper = new KeyguardHelper(this);
+		this.hubHelper = new HubHelper(this);
 		this.minerHelper = new MinerHelper(this);
 		this.accountHelper = new AccountHelper(this);
 		this.transactionHelper = new TransactionHelper(this);
 		this.signatureHelper = new SignatureHelper(this);
 		this.utilHelper = new UtilHelper(this);
+	}
+
+	get keyguardHelper() {
+		console.warn("keyguardHelper is deprecated terminology, please use hubHelper");
+		return this.hubHelper;
 	}
 
 	initNode(options = { }) {
@@ -1172,8 +1175,8 @@ class NimiqWrapper {
 		return this.wrappedNode != null;
 	}
 
-	get keyguardReady() {
-		return this.keyguardHelper.wrappedClient != null;
+	get hubReady() {
+		return this.hubHelper.wrappedClient != null;
 	}
 
 	get minerReady() {
@@ -1206,7 +1209,7 @@ class NimiqWrapper {
 if (WRAPPING_NODE) {
 	module.exports = {
 		AccountHelper,
-		KeyguardHelper,
+		HubHelper,
 		MinerHelper,
 		SignatureHelper,
 		TransactionHelper,

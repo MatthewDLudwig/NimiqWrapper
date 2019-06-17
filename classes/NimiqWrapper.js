@@ -23,7 +23,7 @@ class NimiqWrapper {
 			wrappedNode
 			callbacks
 			nodeOptions
-			keyguardHelper
+			hubHelper
 			minerHelper
 			accountHelper
 			transactionHelper
@@ -55,12 +55,17 @@ class NimiqWrapper {
 		if (options.minerChangedCallback) this.callbacks.minerChanged = options.minerChangedCallback;
 		if (options.connectionStateCallback) this.callbacks.connectionState = options.connectionStateCallback;
 
-		this.keyguardHelper = new KeyguardHelper(this);
+		this.hubHelper = new HubHelper(this);
 		this.minerHelper = new MinerHelper(this);
 		this.accountHelper = new AccountHelper(this);
 		this.transactionHelper = new TransactionHelper(this);
 		this.signatureHelper = new SignatureHelper(this);
 		this.utilHelper = new UtilHelper(this);
+	}
+
+	get keyguardHelper() {
+		console.warn("keyguardHelper is deprecated terminology, please use hubHelper");
+		return this.hubHelper;
 	}
 
 	initNode(options = { }) {
@@ -184,8 +189,8 @@ class NimiqWrapper {
 		return this.wrappedNode != null;
 	}
 
-	get keyguardReady() {
-		return this.keyguardHelper.wrappedClient != null;
+	get hubReady() {
+		return this.hubHelper.wrappedClient != null;
 	}
 
 	get minerReady() {

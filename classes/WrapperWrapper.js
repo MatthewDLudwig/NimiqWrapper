@@ -12,7 +12,7 @@ if (WRAPPING_NODE) {
 if (WRAPPING_NODE) {
 	module.exports = {
 		AccountHelper,
-		KeyguardHelper,
+		HubHelper,
 		MinerHelper,
 		SignatureHelper,
 		TransactionHelper,

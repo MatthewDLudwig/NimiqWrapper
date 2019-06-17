@@ -111,9 +111,7 @@ class AccountHelper {
 		return Nimiq.BufferUtils.toHex(wallet._keyPair.privateKey.serialize());
 	}
 
-	// Will be changed to default to false once legacy wallets are actually legacy in the mainnet.
-	// Currently they're only legacy on the testnet.
-	exportWalletToMnemonic(wallet, legacy = true) {
+	exportWalletToMnemonic(wallet, legacy = false) {
 		let privateKey = wallet._keyPair.privateKey;
 
 		if (legacy) {

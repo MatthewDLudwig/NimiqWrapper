@@ -1,7 +1,7 @@
 # Nimiq Wrapper
 
 NimiqWrapper.js is a library wrapping around the [Nimiq Javascript API](https://github.com/nimiq-network/core).  It comes with 6 helper classes that group together similar functions.  These 6 helpers are:
- * KeyguardHelper
+ * HubHelper
  * MinerHelper
  * AccountHelper
  * TransactionHelper
@@ -22,7 +22,7 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
   - [Common NimiqWrapper Patterns](#common-nimiqwrapper-patterns)
 - [The Objects](#the-objects)
   - [NimiqWrapper](#nimiqwrapper)
-  - [KeyguardHelper](#keyguardhelper)
+  - [HubHelper](#HubHelper)
   - [MinerHelper](#minerhelper)
   - [AccountHelper](#accounthelper)
   - [TransactionHelper](#transactionhelper)
@@ -66,10 +66,10 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
     - `NimiqWrapper:initNode`
     - This function is called to start the Nimiq Node and in the browser it'll initalize the `Nimiq.___` classes.
     - Most functionality of the wrapper will not work without first calling this function.
-  - KeyguardHelper
-    - `KeyguardHelper:initKeyguard`
+  - HubHelper
+    - `HubHelper:initKeyguard`
     - This function is called to initialize the keyguard client, letting it know which keyguard URL to connect to and what the default app name should be for function calls.
-    - KeyguardHelper is the only class that isn't dependent on `NimiqWrapper:initNode` being called before i can be used.
+    - HubHelper is the only class that isn't dependent on `NimiqWrapper:initNode` being called before i can be used.
   - MinerHelper
     - `MinerHelper:initMiner`
     - This function is called to initialize the miner (pool miner by default).
@@ -104,7 +104,7 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
   - `NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED`
     - Thrown when the browser is missing a feature required to use the Nimiq Keyguard.
   - `NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY`
-    - Thrown when a KeyguardHelper function is called before the Keyguard is done initializing.
+    - Thrown when a HubHelper function is called before the Keyguard is done initializing.
   - `NimiqWrapper.ERROR_MESSAGES.BAD_DATA`
     - Thrown when the developer sends a transaction with an extraData of an incompatible type.  None is used in this case.
   - `NimiqWrapper.ERROR_MESSAGES.BAD_ADDRESS`
@@ -138,8 +138,8 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
 
 ### NimiqWrapper
 - Variables
-  - `keyguardHelper`
-    - The `KeyguardHelper` object for this instance of the wrapper.
+  - `HubHelper`
+    - The `hubHelper` object for this instance of the wrapper.
   - `minerHelper`
     - The `MinerHelper` object for this instance of the wrapper.
   - `accountHelper`
@@ -237,9 +237,9 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
   - `nodeReady`
     - This getter returns whether the nimiq node has finished initializing.
     - Ensure that this getter returns true before you do most anything with the `NimiqWrapper` object.
-      - KeyguardHelper functions are one of the few exceptions where `nodeReady` doesn't have to be `true`.
-  - `keyguardReady`
-    - This getter function returns whether the KeyguardHelper initialization function has been called.
+      - HubHelper functions are one of the few exceptions where `nodeReady` doesn't have to be `true`.
+  - `hubReady`
+    - This getter function returns whether the HubHelper initialization function has been called.
   - `minerReady`
     - This getter function returns whether the MinerHelper initialization function has been called.
   - `peerCount`
@@ -251,9 +251,9 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
   - `blockHeight`
     - Returns the current block height.
 
-### KeyguardHelper
+### HubHelper
 
-These functions can be accessed through the `keyguardHelper` property of the constructed `NimiqWrapper` object.
+These functions can be accessed through the `hubHelper` property of the constructed `NimiqWrapper` object.
 
 - Functions
   - `initKeyguard`
@@ -268,12 +268,12 @@ These functions can be accessed through the `keyguardHelper` property of the con
 		  - String
 		- `appName`
 		  - The name that is passed to all keyguard function calls by default and will be displayed in the "Return to ___ " message.
-		    - Each KeyguardHelper function can optionally define a different `appName` to be used for that specific function call, and the value set at initialization is only used if the function doesn't define a different one.
+		    - Each HubHelper function can optionally define a different `appName` to be used for that specific function call, and the value set at initialization is only used if the function doesn't define a different one.
 		  - Default value is "Nimiq Application"
 		  - String
         - `redirectBehavior`
 		  - An object that if defined will have the keyguard open via redirecting to the keyguard and then back to your application rather than by opening a popup.
-		    - This object will be used for all `requestXXXXX` functions in KeyguardHelper, but can be overridden for that specific call.
+		    - This object will be used for all `requestXXXXX` functions in HubHelper, but can be overridden for that specific call.
 		  - Default value is `null` meaning a popup will open with each keyguard call.
 		  - Object with the following parameters:
 		  	- `popup`
@@ -283,7 +283,7 @@ These functions can be accessed through the `keyguardHelper` property of the con
 		  	- `url`
 			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
 			- `data`
-			  - An object which can be passed to the keyguard and that will be accessible via the `KeyguardHelper:getRedirectResponse` function after the redirect.
+			  - An object which can be passed to the keyguard and that will be accessible via the `HubHelper:getRedirectResponse` function after the redirect.
   - `getRedirectResponse`
     - This function checks whether there current page came from a redirect from the keyguard and if so calls either the success or error callback.
 	  - Calling this function repeatedly will always react the exact same, be careful otherwise you'll respond to the same event multiple times.
@@ -334,7 +334,7 @@ These functions can be accessed through the `keyguardHelper` property of the con
 		  	- `url`
 			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
 			- `data`
-			  - An object which can be passed to the keyguard and that will be accessible via the `KeyguardHelper:getRedirectResponse` function after the redirect.
+			  - An object which can be passed to the keyguard and that will be accessible via the `HubHelper:getRedirectResponse` function after the redirect.
   - `requestSignature`
     - This function requests that the user sign a given message with an account of their choosing (or the developer can request a specific one)
     - Parameters
@@ -367,7 +367,7 @@ These functions can be accessed through the `keyguardHelper` property of the con
 		  	- `url`
 			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
 			- `data`
-			  - An object which can be passed to the keyguard and that will be accessible via the `KeyguardHelper:getRedirectResponse` function after the redirect.
+			  - An object which can be passed to the keyguard and that will be accessible via the `HubHelper:getRedirectResponse` function after the redirect.
         - `data`
           - This is the message to be signed by the user.
           - "Please sign this!"
@@ -408,7 +408,7 @@ These functions can be accessed through the `keyguardHelper` property of the con
 		  	- `url`
 			  - The URL that the keyguard will redirect back to after the user completes the requested action.  Must be on the same domain and subdomain as the calling application.
 			- `data`
-			  - An object which can be passed to the keyguard and that will be accessible via the `KeyguardHelper:getRedirectResponse` function after the redirect.
+			  - An object which can be passed to the keyguard and that will be accessible via the `HubHelper:getRedirectResponse` function after the redirect.
         - `logoURL`
           - This property can be used to define a picture which will be shown to the user representing the address rather than the default Iqon for that address.
             - The provided URL must be on the same domain as the site the function is being called from.
@@ -599,8 +599,7 @@ These functions can be accessed through the `accountHelper` property of the cons
         - A boolean value which specified which format of Mnemonic to return.
           - Legacy mnemonics are used for Single Address accounts.
           - Non-Legacy mnemonics are usesd for Keyguard accounts which can hold multiple Nimiq Accounts.
-        - By default, this parameter is `true` as the Nimiq Mainnet (as of April 2019) still uses Single Address Accounts.
-          - The defaul value will be changed to `false` once Keyguard accounts are implmented as the default in the Mainnet.
+        - By default, this parameter is `false`.
   - `exportWalletToBuffer`
     - This function will return a buffer compatible with `importWalletFromBuffer`.
     - Parameters
@@ -721,13 +720,13 @@ These functions can be accessed through the `signatureHelper` property of the co
         - The message being signed by the wallet.
         - Can either be a `Uint8Array`, a string, or a JS object (which will be converted to a JSON string).
   - `verifyKeyguardSignature`
-    - This function can be used with a result from `KeyguardHelper:requestSignature` and the message that was supposedly signed to verify whether the signature is valid for that message.
+    - This function can be used with a result from `HubHelper:requestSignature` and the message that was supposedly signed to verify whether the signature is valid for that message.
     - Parameters
       - `signedMessage`
         - An object returned by the keyguard after signing a message, or an object with the same properties.
 	  - `rawMessage`
 	    - The originally signed message.
-		- The additions to the data made by the Keyguard when signing are done for you automatically so you can use your message as it was specified in `KeyguardHelper:requestSignature`.
+		- The additions to the data made by the Keyguard when signing are done for you automatically so you can use your message as it was specified in `HubHelper:requestSignature`.
   - `verifyRawSignature`
     - This function can be used to verify that a signature represents the given message and was signed by the given public key (different from the user friendly address).
     - Parameters

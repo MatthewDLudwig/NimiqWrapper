@@ -1,6 +1,6 @@
 // Order - 2
 
-class KeyguardHelper {
+class HubHelper {
 	/*
 		Variables:
 			theWrapper
@@ -20,7 +20,7 @@ class KeyguardHelper {
 
 		this.redirectSuccessHandler = (r, d) => { };
 		this.redirectErrorHandler = (e, d) => { };
-		this.defaultErrorHandler = (e, d) => { this.theWrapper.callbacks.error("KeyguardHelper:getRedirectResponse", e); };
+		this.defaultErrorHandler = (e, d) => { this.theWrapper.callbacks.error("HubHelper:getRedirectResponse", e); };
 	}
 
 	redirectSuccess(result, data) {
@@ -73,12 +73,12 @@ class KeyguardHelper {
 
 	requestAddress(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
+			this.theWrapper.callbacks.error("HubHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
+			this.theWrapper.callbacks.error("HubHelper:requestAddress", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -119,7 +119,7 @@ class KeyguardHelper {
 				if (options.onError) {
 					options.onError(err);
 				} else {
-					this.theWrapper.callbacks.error("KeyguardHelper:requestAddress", err);
+					this.theWrapper.callbacks.error("HubHelper:requestAddress", err);
 				}
 			});
 		}
@@ -127,12 +127,12 @@ class KeyguardHelper {
 
 	requestSignature(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
+			this.theWrapper.callbacks.error("HubHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
+			this.theWrapper.callbacks.error("HubHelper:requestSignature", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -184,7 +184,7 @@ class KeyguardHelper {
 				if (options.onError) {
 					options.onError(err);
 				} else {
-					this.theWrapper.callbacks.error("KeyguardHelper:requestSignature", err);
+					this.theWrapper.callbacks.error("HubHelper:requestSignature", err);
 				}
 			});
 		}
@@ -192,12 +192,12 @@ class KeyguardHelper {
 
 	requestTransaction(callback, options = { }) {
 		if (WRAPPING_NODE) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
+			this.theWrapper.callbacks.error("HubHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_SUPPORTED);
 			return;
 		}
 
 		if (!this.wrappedClient) {
-			this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
+			this.theWrapper.callbacks.error("HubHelper:requestTransaction", NimiqWrapper.ERROR_MESSAGES.KEYGUARD_NOT_READY);
 			return;
 		}
 
@@ -261,7 +261,7 @@ class KeyguardHelper {
 				if (options.onError) {
 					options.onError(err);
 				} else {
-					this.theWrapper.callbacks.error("KeyguardHelper:requestTransaction", err);
+					this.theWrapper.callbacks.error("HubHelper:requestTransaction", err);
 				}
 			});
 		}
