@@ -32,6 +32,10 @@ class HubHelper {
 	}
 
 	initKeyguard(options = { }) {
+		this.initHub(options);
+	}
+	
+	initHub(options = { }) {
 		if (options.appName) this.keyguardOptions.name = options.appName;
 		if (options.keyguardURL) this.keyguardOptions.url = options.keyguardURL;
 		if (options.redirectBehavior) {
