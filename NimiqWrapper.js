@@ -4,6 +4,9 @@ if (WRAPPING_NODE) {
 	var Nimiq = require("@nimiq/core");
 } else {
 	console.log("Wrapping Nimiq in JS!");
+	if (!Nimiq) {
+		alert("Nimiq.js library isn't loaded!  Is your ad blocker blocking it?");
+	}
 }
 
 class HubHelper {
