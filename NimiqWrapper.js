@@ -38,6 +38,10 @@ class HubHelper {
 	}
 
 	initKeyguard(options = { }) {
+		this.initHub(options);
+	}
+	
+	initHub(options = { }) {
 		if (options.appName) this.keyguardOptions.name = options.appName;
 		if (options.keyguardURL) this.keyguardOptions.url = options.keyguardURL;
 		if (options.redirectBehavior) {
@@ -1077,6 +1081,7 @@ class NimiqWrapper {
 		if (options.whenReady) this.nodeOptions.ready = options.whenReady;
 
 		if (WRAPPING_NODE) {
+			this.nodeOptions.loaded();
 			this.innerInit();
 		} else {
 			Nimiq.init(async () => {
@@ -1118,6 +1123,8 @@ class NimiqWrapper {
 			instance.consensus = await Nimiq.Consensus.light();
 		} else if (this.nodeOptions.type == "FULL") {
 			instance.consensus = await Nimiq.Consensus.full();
+		} else if (this.nodeOptions.type == "DUMB-FULL") {
+			instance.consensus = await Nimiq.Consensus.full(new Nimiq.DumbNetworkConfig());
 		} else {
 			this.callbacks.error("NimiqWrapper:innerInit", "Unknown node type requested: " + this.nodeOptions.type);
 			return;
