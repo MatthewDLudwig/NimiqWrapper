@@ -1063,6 +1063,7 @@ class NimiqWrapper {
 			network : "MAIN",
 			type : "LIGHT",
 			debug : false,
+			connect : true,
 			classes : false,
 			loaded : () => {
 
