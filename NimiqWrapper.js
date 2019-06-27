@@ -1077,7 +1077,7 @@ class NimiqWrapper {
 		if (options.type) this.nodeOptions.type = options.type.toUpperCase();
 		if (options.debug) this.nodeOptions.debug = options.debug;
 		
-		if (options.autoConnect) this.nodeOptions.connect = options.autoConnect;
+		if (options.dontConnect) this.nodeOptions.connect = !options.dontConnect;
 		if (options.justClasses) this.nodeOptions.classes = options.justClasses;
 		if (options.whenLoaded) this.nodeOptions.loaded = options.whenLoaded;
 		if (options.whenReady) this.nodeOptions.ready = options.whenReady;
