@@ -85,12 +85,14 @@ class NimiqWrapper {
 		if (options.network) this.nodeOptions.network = options.network.toUpperCase();
 		if (options.type) this.nodeOptions.type = options.type.toUpperCase();
 		if (options.debug) this.nodeOptions.debug = options.debug;
-
+		
+		if (options.autoConnect) this.nodeOptions.connect = options.autoConnect;
 		if (options.justClasses) this.nodeOptions.classes = options.justClasses;
 		if (options.whenLoaded) this.nodeOptions.loaded = options.whenLoaded;
 		if (options.whenReady) this.nodeOptions.ready = options.whenReady;
 
 		if (WRAPPING_NODE) {
+			this.nodeOptions.loaded();
 			this.innerInit();
 		} else {
 			Nimiq.init(async () => {
@@ -163,7 +165,10 @@ class NimiqWrapper {
 		this.wrappedNode.network.on('peer-joined', (peer) => this.callbacks.peerJoined(peer));
 		this.wrappedNode.blockchain.on('head-changed', () => this.callbacks.headChanged());
 
-		this.wrappedNode.network.connect();
+		if (this.nodeOptions.connect) {
+			this.wrappedNode.network.connect();
+		}
+		
 		this.nodeOptions.ready();
 	}
 
