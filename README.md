@@ -216,6 +216,11 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
           - The default value is `false` and `window.nimiq` will be `undefined`.
             - `window.Nimiq` is different from `window.nimiq`
           - Boolean
+        - `autoConnect`
+          - This property is used to indicate whether or not the node should automatically connect to the network after initialization.
+            - Set this to `false` if you wish to manually connect to the network.
+          - The default value is `true`.
+          - Boolean
         - `justClasses`
           - If true, a node won't be initialized and the initialization will stop after downloading the remaining `Nimiq.___` classes.
           - By default it's false.
