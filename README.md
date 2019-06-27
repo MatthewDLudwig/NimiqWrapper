@@ -539,7 +539,7 @@ These functions can be accessed through the `accountHelper` property of the cons
       - `obj`
         - The object that the friendly representation should be looked up for.
         - Type of `obj` must be either `Nimiq.Wallet`, `Nimiq.Address`, or `Nimiq.PublicKey`.
-  - `geBalance`
+  - `getBalance`
     - This function will retrieve the balance of the given account/address and will call the callback function with the balance.
     - Parameters
       - `obj`
