@@ -132,6 +132,8 @@ class NimiqWrapper {
 			instance.consensus = await Nimiq.Consensus.light();
 		} else if (this.nodeOptions.type == "FULL") {
 			instance.consensus = await Nimiq.Consensus.full();
+		} else if (this.nodeOptions.type == "DUMB-FULL") {
+			instance.consensus = await Nimiq.Consensus.full(new Nimiq.DumbNetworkConfig());
 		} else {
 			this.callbacks.error("NimiqWrapper:innerInit", "Unknown node type requested: " + this.nodeOptions.type);
 			return;
