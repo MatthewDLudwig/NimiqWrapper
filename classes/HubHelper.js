@@ -1,6 +1,13 @@
 // Order - 2
 
 class HubHelper {
+	static get KEYGUARD_URLS() {
+		return {
+			TEST : "https://hub.nimiq-testnet.com",
+			MAIN : "https://hub.nimiq.com"
+		};
+	}
+
 	/*
 		Variables:
 			theWrapper
@@ -34,7 +41,7 @@ class HubHelper {
 	initKeyguard(options = { }) {
 		this.initHub(options);
 	}
-	
+
 	initHub(options = { }) {
 		if (options.appName) this.keyguardOptions.name = options.appName;
 		if (options.keyguardURL) this.keyguardOptions.url = options.keyguardURL;

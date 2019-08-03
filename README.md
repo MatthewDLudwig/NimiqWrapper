@@ -453,9 +453,7 @@ These functions can be accessed through the `hubHelper` property of the construc
           - NULL (meaning the transaction only sends NIM from one account to another)
           - Enum (`Nimiq.Transaction.Flag`)
         - `expiration`
-          - This value specifies at what block height the transaction becomes valid to mine, and if the transaction hasn't been mined 120 blocks (about 2 hours) after this value it'll be invalidated.
-            - This prevents transactions from floating around during times when the network is congested, and then randomly getting mined a few days later possibly causing the user to be charged twice.
-            - If this value is set to less than the current block height, it'll be immediately valid but will expire 2 hours after the specified block height and not 2 hours after it was submitted.
+          - This value specifies how many blocks the transaction should be valid for, and is used differently than `TransactionHelper::sendTransaction`
           - NULL (meaning the transaction will immediately be valid and expire in 2 hours if not mined by then)
           - Number
         - `data`

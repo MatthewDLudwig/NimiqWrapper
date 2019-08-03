@@ -10,6 +10,13 @@ if (WRAPPING_NODE) {
 }
 
 class HubHelper {
+	static get KEYGUARD_URLS() {
+		return {
+			TEST : "https://hub.nimiq-testnet.com",
+			MAIN : "https://hub.nimiq.com"
+		};
+	}
+
 	/*
 		Variables:
 			theWrapper
@@ -43,7 +50,7 @@ class HubHelper {
 	initKeyguard(options = { }) {
 		this.initHub(options);
 	}
-	
+
 	initHub(options = { }) {
 		if (options.appName) this.keyguardOptions.name = options.appName;
 		if (options.keyguardURL) this.keyguardOptions.url = options.keyguardURL;
@@ -580,13 +587,19 @@ class TransactionHelper {
 			this.theWrapper.callbacks.error("TransactionHelper:getRemainingFreeTransactionsFor", NimiqWrapper.ERROR_MESSAGES.BAD_PARAM_TYPE);
 			return 0;
 		} else {
-			return Math.max(0, 10 - this.theWrapper.wrappedNode.mempool.getTransactionsBySender(watchAddr).filter((tx) => {
-				return tx.fee == 0;
-			}).length);
+			if (this.theWrapper.nodeType == "NANO") {
+				return Math.max(0, 10 - this.theWrapper.wrappedNode.mempool._transactionSetByAddress.values().map(it => [it.sender.toUserFriendlyAddress(), it.transactions.length]).filter(it => it[0] != watchAddr.toUserFriendlyAddress()).filter((tx) => {
+					return tx.fee == 0;
+				}).length);
+			} else {
+				return Math.max(0, 10 - this.theWrapper.wrappedNode.mempool.getTransactionsBySender(watchAddr).filter((tx) => {
+					return tx.fee == 0;
+				}).length);
+			}
 		}
 	}
 
-	watchForTransactionsTo(obj, callback) {
+	watchForTransactionsTo(obj, callback, onlyMined = false) {
 		let watchAddr = null;
 		if (obj instanceof Nimiq.Wallet) {
 			watchAddr = obj.address;
@@ -605,7 +618,15 @@ class TransactionHelper {
 
 			let trackID = this.theWrapper.wrappedNode.mempool.on("transaction-added", (tx) => {
 				if (tx.recipient.equals(watchAddr)) {
-					callback(tx);
+					if (!onlyMined) callback(tx, "mining");
+
+					let txHash = Nimiq.BufferUtils.toHex(tx._hash._obj);
+					let tracker = setInterval(() => {
+						if (!this.theWrapper.mempoolTxHashes.includes(txHash)) {
+							clearInterval(tracker);
+							callback(tx, "mined");
+						}
+					}, 1000);
 				}
 			});
 
@@ -619,7 +640,7 @@ class TransactionHelper {
 		}
 	}
 
-	watchForTransactionsFrom(obj, callback) {
+	watchForTransactionsFrom(obj, callback, onlyMined = false) {
 		let watchAddr = null;
 		if (obj instanceof Nimiq.Wallet) {
 			watchAddr = obj.address;
@@ -638,7 +659,15 @@ class TransactionHelper {
 
 			let trackID = this.theWrapper.wrappedNode.mempool.on("transaction-added", (tx) => {
 				if (tx.sender.equals(watchAddr)) {
-					callback(tx);
+					if (!onlyMined) callback(tx, "mining");
+
+					let txHash = Nimiq.BufferUtils.toHex(tx._hash._obj);
+					let tracker = setInterval(() => {
+						if (!this.theWrapper.mempoolTxHashes.includes(txHash)) {
+							clearInterval(tracker);
+							callback(tx, "mined");
+						}
+					}, 1000);
 				}
 			});
 
@@ -652,7 +681,7 @@ class TransactionHelper {
 		}
 	}
 
-	watchForTransactionsInvolving(obj, callback) {
+	watchForTransactionsInvolving(obj, callback, onlyMined = false) {
 		let watchAddr = null;
 		if (obj instanceof Nimiq.Wallet) {
 			watchAddr = obj.address;
@@ -671,7 +700,15 @@ class TransactionHelper {
 
 			let trackID = this.theWrapper.wrappedNode.mempool.on("transaction-added", (tx) => {
 				if (tx.sender.equals(watchAddr) || tx.recipient.equals(watchAddr)) {
-					callback(tx);
+					if (!onlyMined) callback(tx, "mining");
+
+					let txHash = Nimiq.BufferUtils.toHex(tx._hash._obj);
+					let tracker = setInterval(() => {
+						if (!this.theWrapper.mempoolTxHashes.includes(txHash)) {
+							clearInterval(tracker);
+							callback(tx, "mined");
+						}
+					}, 1000);
 				}
 			});
 
@@ -1054,6 +1091,8 @@ class NimiqWrapper {
 		this.transactionHelper = new TransactionHelper(this);
 		this.signatureHelper = new SignatureHelper(this);
 		this.utilHelper = new UtilHelper(this);
+
+		this.synced = false;
 	}
 
 	get keyguardHelper() {
@@ -1064,7 +1103,7 @@ class NimiqWrapper {
 	initNode(options = { }) {
 		this.nodeOptions = {
 			network : "MAIN",
-			type : "LIGHT",
+			type : WRAPPING_NODE ? "LIGHT" : "NANO",
 			debug : false,
 			connect : true,
 			classes : false,
@@ -1079,7 +1118,7 @@ class NimiqWrapper {
 		if (options.network) this.nodeOptions.network = options.network.toUpperCase();
 		if (options.type) this.nodeOptions.type = options.type.toUpperCase();
 		if (options.debug) this.nodeOptions.debug = options.debug;
-		
+
 		if (options.dontConnect) this.nodeOptions.connect = !options.dontConnect;
 		if (options.justClasses) this.nodeOptions.classes = options.justClasses;
 		if (options.whenLoaded) this.nodeOptions.loaded = options.whenLoaded;
@@ -1145,9 +1184,15 @@ class NimiqWrapper {
 			window.nimiq = this.wrappedNode;
 		}
 
-		this.wrappedNode.consensus.on('lost', () => this.callbacks.consensus("lost"));
+		this.wrappedNode.consensus.on('lost', () => {
+			this.synced = false;
+		 	this.callbacks.consensus("lost")
+		});
 		this.wrappedNode.consensus.on('syncing', () => this.callbacks.consensus("syncing"));
-		this.wrappedNode.consensus.on('established', () => this.callbacks.consensus("established"));
+		this.wrappedNode.consensus.on('established', () => {
+			this.synced = true;
+			this.callbacks.consensus("established")
+		});
 
 		this.wrappedNode.consensus.on('sync-chain-proof', () => this.callbacks.syncStatus('sync-chain-proof'));
 		this.wrappedNode.consensus.on('verify-chain-proof', () => this.callbacks.syncStatus('verify-chain-proof'));
@@ -1162,7 +1207,7 @@ class NimiqWrapper {
 		if (this.nodeOptions.connect) {
 			this.wrappedNode.network.connect();
 		}
-		
+
 		this.nodeOptions.ready();
 	}
 
@@ -1172,6 +1217,16 @@ class NimiqWrapper {
 
 	getBlockRewardAt(block) {
 		return Nimiq.Policy.blockRewardAt(block);
+	}
+
+	get mempoolTxs() {
+		return this.wrappedNode.mempool._transactionSetByAddress.values().reduce((r, c) => {
+			r.push(...c.transactions);
+		}, []);
+	}
+
+	get mempoolTxHashes() {
+		return this.mempoolTxs.map(it => Nimiq.BufferUtils.toHex(it._hash._obj));
 	}
 
 	get nodeType() {
