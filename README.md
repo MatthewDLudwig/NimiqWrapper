@@ -44,7 +44,7 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
 	- or
 	- https://cdn.jsdelivr.net/npm/@nimiq/hub-api@v0.4/dist/standalone/HubApi.standalone.umd.js
   - NimiqWrapper Library
-    - Use `NimiqWrapper.js` in the base directory of this repo.
+    - Use `NimiqWrapper.js` in the "releases/browser" directory of this repo.
 	- Or use the individual files in the `classes` directory of this repo, including them in the order specified at the top of the files.
 	- CDN in the future.
 
@@ -53,7 +53,8 @@ The original version of NimiqWrapper thinly wrapped around the Nimiq API but onl
   - Nimiq Module (@nimiq/core)
   - NimiqWrapper Module (optional, can instead manually import NimiqWrapper.js)
 - If using NimiqWrapper.js instead of the NimiqWrapper module.
-  - The only change to NimiqWrapper.js necessary for it to work with NodeJS is to set the `WRAPPING_NODE` variable to true.
+  - The only change to the NimiqWrapper.js used by the browser necessary for it to work with NodeJS is to set the `WRAPPING_NODE` variable to true.
+  - Alternatively you can use `NimiqWrapper.js` in the "releases/node" directory of this repo which already has `WRAPPING_NODE` set to true.
   - This is already done for the NimiqWrapper module, so no extra changes are necessary if using it.
 
 ## Basics
@@ -896,10 +897,8 @@ wrapper.initNode({
 ## Licensing
 NimiqWrapper is licensed under the Apache 2.0 license.  This license was chosen in order to restrict developers as little as possible and anything made using NimiqWrapper has no obligations to release source code, include the Apache 2.0 license, or pay me (the creator of NimiqWrapper) any money.
 
-Any modifications made to either of the 3 classes provided with NimiqWrapper won't require that the modified source be released, however I would appreciate if it would be.  Better yet, please submit pull requests for any modifications made that would benefit the community.
+Any modifications made to either of the classes provided with NimiqWrapper won't require that the modified source be released, however I would appreciate if it would be.  Better yet, please submit pull requests for any modifications made that would benefit the community.
 
-If you'd still like to throw some money my way, I accept donations in the following ways:
+If you'd like to throw some money my way, I accept donations in the following ways:
  * Send NIM to:
-   * NQ35 6LER H8L4 1XM3 4YPB S502 SUV5 634A J7HR
- * Send ETH or tokens to:
-   * 0x844a2Fcbc127980b158a04c054A22545a6f44c50
+   * NQ02 DT0F 2QLS X034 097D EJKF YUUJ X53X 2NQX

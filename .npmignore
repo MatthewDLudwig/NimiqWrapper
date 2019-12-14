@@ -1,0 +1,4 @@
+# Exclude stuff meant only for Github
+
+assets/
+demos/

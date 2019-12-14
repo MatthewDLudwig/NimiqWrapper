@@ -1,0 +1,22 @@
+{
+	"name": "nimiq-wrapper",
+	"author": "Chugwig",
+	"version": "2.2.4",
+	"description": "A wrapper around the Nimiq core API.",
+	"homepage": "https://github.com/MatthewDLudwig/NimiqWrapper#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/MatthewDLudwig/NimiqWrapper.git"
+	},
+	"bugs": {
+		"url": "https://github.com/MatthewDLudwig/NimiqWrapper/issues"
+	},
+	"keywords": [
+		"node", "nimiq"
+	],
+	"main": "releases/node/NimiqWrapper.js",
+	"license": "Apache 2.0",
+	"dependencies": {
+		"@nimiq/core": "^1.1.2"
+	}
+}
